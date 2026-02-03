@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        header {
+            height : 112px;
+            background-color: blue;
+            display: flex;
+            flex-wrap: wrap;
+            background-image: url(background.jpeg);
+            background-size: cover;
+            border-bottom: 2px solid black;
+            width : 100vw;
+            position: relative;
+            right: 10px;
+            bottom: 7px;
+        }
+
+
+        body {
+            background-image: url(02.jpg.jpeg);
+            background-size: cover;
+        }
+        #collegeName {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 45px;
+            font-weight: 600;
+            position: relative;
+            top:14px;
+        }
+
+        #Address {
+            color: rgb(24, 3, 121);
+            position: relative;
+            left: 500px;
+            bottom: 30px;
+            font-size: 24px;
+        }
+
+        #container{
+            height : 80vh;
+            width : 98vw;
+            border-radius: 5%;
+            
+        }
+
+        #photo {
+            height: 4.5cm;
+            width : 3.5cm;
+            background-image: url(WhatsApp\ Image\ 2026-01-23\ at\ 12.42.18\ AM.jpeg);
+            background-size: cover;
+            position: fixed;
+            bottom : 360px;
+            right : 200px;
+        }
+
+        #information {
+            height : 300px;
+            width : 1200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            left : 250px;
+            top : 50px;
+        }
+
+        .info {
+            font-size: 30px;
+            font-family: 'Times New Roman', Times, serif;
+            font-weight: 550;
+            margin-left: 100px;
+        }
+
+        .infol{
+            font-size: 28px;
+            font-family: 'Times New Roman', Times, serif;
+        }
+
+        #name {
+            position: relative;
+            top : -15px;
+        }
+        #roll_no {
+            position: relative;
+            top : -5px;
+        }
+
+        #branch {
+            position: relative;
+            top : 5px;
+        }
+
+        #phone_no {
+            position: relative;
+            top : 15px;
+        }        
+
+        #outing {
+            position: relative;
+            left : 200px;
+            bottom : -30px;
+            height : 30px;
+            width : 110px;
+        }
+
+        button {
+            width :110px;
+            height : 30px;
+            position: relative;
+            left : 952px;
+            top : 15px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img id="collegeLogo" src="	https://jntuhces.ac.in/resp/images_new/jntuhlogo.png" alt="jntuhces logo">
+        <div id="collegeName">JNTUH UNIVERSITY COLLEGE OF ENGINEERING - SULTANPUR</div>
+        <div id="Address">Sulthanpur (V), Choutkur (M), Sangareddy (D), (T.G)-502 273.</div>
+    </header>
+
+    <body>
+        <div id="container">
+            <div id="information">
+                <div id="name">
+                    <span class="info">Name :</span>
+                    <span class="infol">Krupa Sagar</span>
+                </div>
+                <div id="roll_no">
+                    <span class="info">Roll No :</span>
+                    <span class="infol">24SS1A6635</span>
+                </div>
+                <div id="branch">
+                    <span class="info">Branch :</span>
+                    <span class="infol">CSE (AI&ML)</span>
+                </div>
+                <div id="phone_no">
+                    <span class="info">Phone No :</span>
+                    <span class="infol">9346863732</span>
+                </div>
+
+                <div id="selection">
+                    <select name="OUT" id="outing">
+                        <option value="Outing">Outing</option>
+                        <option value="Home">Home</option>
+                    </select>
+                </div>
+                <button>Create QR</button>
+            </div>
+        </div>
+        <div id="photo"></div>
+    </body>
+</body>
+</html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        header {
+            height : 112px;
+            background-color: blue;
+            display: flex;
+            flex-wrap: wrap;
+            background-image: url(JNTHUCES.jpg.jpeg);
+            background-size: cover;
+        }
+
+        body {
+            background-image: url(05.jpg.jpeg);
+            background-size: cover;
+        }
+
+        #collegeName {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 45px;
+            font-weight: 600;
+            position: relative;
+            top:14px;
+        }
+
+        #Address {
+            position: relative;
+            left: 500px;
+            bottom: 30px;
+            font-size: 24px;
+        }
+
+        #container{
+            height : 370px;
+            width : 300px;
+            border: 3px solid black;
+            border-radius: 5%;
+            position: relative;
+            left : 600px;
+            top : 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-evenly;
+            align-items:center ;
+            position: relative;
+            top : 100px;
+        }
+
+        #login {
+            font-size: 40px;
+            font-weight: 600;
+            position: relative;
+            bottom: 30px;;
+        }
+
+        #roll_no_label {
+            font-size: 24px;
+            font-family: 'Times New Roman', Times, serif;
+            font-weight: 500;
+            position: relative;
+            left: 40px;
+            bottom: 50px;
+        }
+
+        #roll_no_input {
+            width : 130%;
+            height: 20px;
+            position: relative;
+            bottom: 60px;
+            right : 30px;
+        }
+
+        #student_password_label {
+            font-size: 24px;
+            font-family: 'Times New Roman', Times, serif;
+            font-weight: 500;
+            position: relative;
+            left: 40px;
+            bottom: 50px;
+        }
+
+        #student_password_input {
+            width : 130%;
+            height: 20px;
+            position: relative;
+            bottom: 60px;
+            right : 30px;
+        }
+
+        button {
+            width : 100px;
+            height:30px;
+            position: relative;
+            bottom: 20px;;
+        }
+    </style>
+</head>
+<body>
+    <header></header>
+    <body>
+        <div id="container">
+            <h2 id="login">Login</h2>
+
+            <div id="roll_no">
+                <p id="roll_no_label">Roll No</p>
+                <input id="roll_no_input" type="text" placeholder="Roll No">
+            </div>
+
+            <div id="student_password">
+                <p id="student_password_label">Password</p>
+                <input id="student_password_input" type="password" placeholder="Password">
+            </div>
+            <button>Login</button>
+        </div>
+    </body>
+</body>
+</html>
