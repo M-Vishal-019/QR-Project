@@ -6,7 +6,12 @@
     <title>Document</title>
 
     <style>
-        header {
+        *{
+            border : border-box;
+            padding: 0px;
+            margin : 0px;
+        }
+         header {
             height : 112px;
             background-color: blue;
             display: flex;
@@ -18,40 +23,41 @@
             position: relative;
             right: 10px;
             bottom: 7px;
+            margin-left: 0.6%;
         }
 
-
-        body {
-            background-image: url(02.jpg.jpeg);
-            background-size: cover;
+        main {
+            width: 100vw;
+            height: 80vh;
         }
+
         #collegeName {
             font-family: 'Times New Roman', Times, serif;
-            font-size: 45px;
+            font-size: 2.8vw;
             font-weight: 600;
-            position: relative;
+            position: absolute;
+            right : 5%;
             top:14px;
         }
 
         #Address {
             color: rgb(24, 3, 121);
-            position: relative;
-            left: 500px;
-            bottom: 30px;
-            font-size: 24px;
+            position: absolute;
+            left: 30%;
+            bottom: 5%;
+            font-size: 1.8vw;
         }
 
         #container{
             height : 80vh;
             width : 98vw;
             border-radius: 5%;
-            
         }
 
         #photo {
             height: 4.5cm;
             width : 3.5cm;
-            background-image: url(WhatsApp\ Image\ 2026-01-23\ at\ 12.42.18\ AM.jpeg);
+            background-image: url(tony.jpg);
             background-size: cover;
             position: fixed;
             bottom : 360px;
@@ -115,6 +121,29 @@
             left : 952px;
             top : 15px;
         }
+
+        #qrcode {
+            position:absolute;
+            top : 100%;
+            left : 35%;
+        }
+
+        a {
+            text-decoration: none;
+            color: black;
+            font-weight: 500;
+            font-size: 1.3rem;
+        }
+
+        #home_link {
+            position: absolute;
+            left: 2%;
+        }
+
+        #history_link {
+            position: absolute;
+            left: 7%;
+        }
     </style>
 </head>
 <body>
@@ -124,12 +153,14 @@
         <div id="Address">Sulthanpur (V), Choutkur (M), Sangareddy (D), (T.G)-502 273.</div>
     </header>
 
-    <body>
+    <main>
+        <a href="index.html" id="home_link">Home</a>
+        <a href="student_history.html" id="history_link">History</a>
         <div id="container">
             <div id="information">
                 <div id="name">
                     <span class="info">Name :</span>
-                    <span class="infol">Krupa Sagar</span>
+                    <span class="infol">Tony Stark</span>
                 </div>
                 <div id="roll_no">
                     <span class="info">Roll No :</span>
@@ -150,10 +181,27 @@
                         <option value="Home">Home</option>
                     </select>
                 </div>
-                <button>Create QR</button>
+                <button id="createQr" onclick="generateQr()" >Create QR</button>
+                <div id="qrcode"></div>
             </div>
         </div>
         <div id="photo"></div>
-    </body>
+    </main>
 </body>
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+   
+    <script>
+        function generateQr(){
+            let element = document.getElementById("qrcode");
+            let button = document.getElementById("createQr");
+            button.style.display= "none";
+            let qrcode = new QRCode(element, {
+                text: "Stark Industries",
+                width: 180,
+                height: 180,
+                colorDark: "#000000",
+                colorLight: "#ffffff", 
+            });
+        }
+    </script>
 </html>

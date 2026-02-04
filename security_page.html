@@ -2,11 +2,19 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <title>Q-Pass | Security Module</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+
+    <!-- QR Scanner Library -->
+    <script src="https://unpkg.com/html5-qrcode"></script>
 
     <style>
-        header {
+        *{
+            border : border-box;
+            padding: 0px;
+            margin : 0px;
+        }
+         header {
             height : 112px;
             background-color: blue;
             display: flex;
@@ -18,146 +26,179 @@
             position: relative;
             right: 10px;
             bottom: 7px;
+            margin-left: 0.6%;
         }
 
-
-        body {
-            background-image: url(05.jpg.jpeg);
-            background-size: cover;
+        main {
+            width: 100vw;
+            height: 80vh;
         }
 
         #collegeName {
             font-family: 'Times New Roman', Times, serif;
-            font-size: 45px;
+            font-size: 2.8vw;
             font-weight: 600;
-            position: relative;
+            position: absolute;
+            right : 5%;
             top:14px;
         }
 
         #Address {
             color: rgb(24, 3, 121);
-            position: relative;
-            left: 500px;
-            bottom: 30px;
-            font-size: 24px;
+            position: absolute;
+            left: 30%;
+            bottom: 5%;
+            font-size: 1.8vw;
         }
 
-        #container{
-            height : 370px;
-            width : 300px;
-            border: 3px solid black;
-            border-radius: 5%;
-            position: relative;
-            left : 600px;
-            top : 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-evenly;
-            align-items:center ;
-            position: relative;
-            top : 100px;
-        }
-
-        #login {
+        #Security{
             font-size: 40px;
-            font-weight: 600;
-            position: relative;
-            bottom: 30px;;
-        }
-
-        #staff_id_label {
-            font-size: 24px;
             font-family: 'Times New Roman', Times, serif;
-            font-weight: 500;
-            position: relative;
-            left: 40px;
-            bottom: 50px;
-        }
-
-        #staff_id_input {
-            width : 130%;
-            height: 20px;
-            position: relative;
-            bottom: 60px;
-            right : 30px;
-        }
-
-        #student_password_label {
-            font-size: 24px;
-            font-family: 'Times New Roman', Times, serif;
-            font-weight: 500;
-            position: relative;
-            left: 40px;
-            bottom: 50px;
-        }
-
-        #student_password_input {
-            width : 130%;
-            height: 20px;
-            position: relative;
-            bottom: 60px;
-            right : 30px;
-        }
-
-        a {
-            text-decoration: none;
             color: black;
-            position: relative;
-            left : 30px;
-            top : 5px;
+            border-radius: 2%;
+            justify-items: center;
+            margin-left: 600px;
+            margin-top: 10px;
+        }
+        
+        .container{
+            display:flex;
+            justify-content:space-around;
+            padding:20px;
         }
 
-        #button {
-            width : 100px;
-            height:30px;
-            background-color: antiquewhite;
-            position: relative;
-            bottom: 30px;
-            border : 1px solid black;
-            border-radius: 10%;
+        .box{
+            background:white;
+            padding:20px;
+            border-radius:10px;
+            width:45%;
+            box-shadow:0 0 10px rgba(0,0,0,0.15);
+            height: 45%;
         }
 
-        #nav {
-            display: inline;
-            position: fixed;
-            top : 180px;
-            left : 650px;
+        h2{
+            text-align:center;
+            margin-bottom:15px;
+            color:#002b5c;
+            font-size: 35px;
         }
 
-        .nav{
-            font-weight: 600;
-            font-size: 24px;
+        #reader{
+            width:100%;
         }
+
+        .info{
+            font-size:25px;
+            margin:8px 0;
+            font-family: 'Times New Roman', Times, serif;
+        }
+
+        .label{
+            font-weight:bold;
+        }
+
+        .count{
+            font-size:25px;
+            text-align:center;
+            margin-top:15px;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .in{
+            color:green;
+        }
+        .out{
+            color:red;
+        }
+
+        #late_list_link{
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1.5rem;
+            color: black;
+            position: absolute;
+            left: 2%;
+        }
+
+        #late_list_link:hover {
+            color: blue;
+        }
+
     </style>
+
 </head>
-<body>
+    <body>
     <header>
         <img id="collegeLogo" src="	https://jntuhces.ac.in/resp/images_new/jntuhlogo.png" alt="jntuhces logo">
         <div id="collegeName">JNTUH UNIVERSITY COLLEGE OF ENGINEERING - SULTANPUR</div>
         <div id="Address">Sulthanpur (V), Choutkur (M), Sangareddy (D), (T.G)-502 273.</div>
     </header>
+    <main>
 
-    <body>
-        <div id="nav">
-            <a class="nav" href="index.html">Student /</a>
-            <a class="nav" href="security_page.html">Staff</a>
+            <a href="late_list.html" id="late_list_link">Late List</a>
+        <div id = "Security">
+            Security Module
         </div>
-        <div id="container">
-            <h2 id="login">Login</h2>
-
-            <div id="staff_id">
-                <p id="staff_id_label">Staff Id</p>
-                <input id="staff_id_input" type="text" placeholder="Staff Id">
+        <div class="container">
+            
+            <div class="box">
+                <h2>QR Scanner</h2>
+                <div id="reader"></div>
             </div>
-
-            <div id="student_password">
-                <p id="student_password_label">Password</p>
-                <input id="student_password_input" type="password" placeholder="Password">
-            </div>
-            <div id="button">
-                <a href="student_page.html">Login
+            
+            <div class="box">
+                <h2>Student Details</h2>
+                
+            <div class="info"><span class="label">Name:</span> <span id="name">-</span></div>
+            <div class="info"><span class="label">Roll No:</span> <span id="roll">-</span></div>
+            <div class="info"><span class="label">Branch:</span> <span id="branch">-</span></div>
+            <div class="info"><span class="label">Phone:</span> <span id="phone">-</span></div>
+            <div class="info"><span class="label">Outing Type:</span> <span id="type">-</span></div>
+            
+            <div class="count in">IN Count: <span id="inCount">0</span></div>
+            <div class="count out">OUT Count: <span id="outCount">0</span></div>
             </div>
         </div>
+    </main>
+    <script>
+        let inCount = 0;
+        let outCount = 0;
+
+        function onScanSuccess(decodedText) {
+
+
+            let lines = decodedText.split("\n");
+
+            let name = lines[1]?.split(":")[1];
+            let roll = lines[2]?.split(":")[1];
+            let branch = lines[3]?.split(":")[1];
+            let phone = lines[4]?.split(":")[1];
+            let type = lines[5]?.split(":")[1];
+
+            document.getElementById("name").innerText = name || "";
+            document.getElementById("roll").innerText = roll || "";
+            document.getElementById("branch").innerText = branch || "";
+            document.getElementById("phone").innerText = phone || "";
+            document.getElementById("type").innerText = type || "";
+
+            // Update Count
+            if(type && type.trim() === "Outing"){
+                outCount++;
+                document.getElementById("outCount").innerText = outCount;
+            }else{
+                inCount++;
+                document.getElementById("inCount").innerText = inCount;
+            }
+        }
+
+        let html5QrCode = new Html5Qrcode("reader");
+
+        html5QrCode.start(
+            { facingMode: "environment" },
+            { fps: 0.6, qrbox: 250 },
+            onScanSuccess
+        );
+        </script>
+
     </body>
-</body>
 </html>
