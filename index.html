@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-
+    <title>QR Pass</title>
     <style>
         *{
             border : border-box;
@@ -48,89 +47,67 @@
             font-size: 1.8vw;
         }
 
-        #container{
-            height : 55%;
-            width :20%;
-            border: 3px solid black;
-            border-radius: 5%;
-            position: absolute;
-            left: 39%;
-            top : 30%;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-evenly;
-            align-items:center ;
-        }
-
-        #login {
+        #welcome {
             font-size: 2.5rem;
-            font-weight: 600;
-            position: absolute;
-            top : 5%;
+            font-weight: 700;
+            text-align: center;
+            position : relative;
+            top:10%;
         }
 
-        #roll_no_label {
-            font-size: 1.5rem;
-            font-family: 'Times New Roman', Times, serif;
-            font-weight: 500;
-            position: absolute;
-            top : 25%;
-            left : 36%;
-        }
-
-        #roll_no_input {
-            width : 75%;
-            height: 20px;
-            position: absolute;
-            top : 34%;
-            left : 10%;
-        }
-
-        #student_password_label {
-            font-size: 1.5rem;
-            font-family: 'Times New Roman', Times, serif;
-            font-weight: 500;
-            position: absolute;
-            top : 50%;
-            left : 35%;
-        }
-
-        #student_password_input {
-            width : 75%;
-            height: 20px;
-            position: absolute;
-            top : 60%;
-            left : 10%;
-        }
-
-        a {
-            text-decoration: none;
-            color: black;
+        #container {
+            height : 60%;
+            width: 60%;
+            border: 2px solid black;
+            display: flex;
+            align-items: center;
             position: relative;
-            left : 30px;
-            top : 5px;
+            left: 18%;
+            top : 20%;
         }
 
-        #button {
-            width : 100px;
-            height:30px;
-            background-color: antiquewhite;
+        #student {
+            height: 99%;
+            width: 48%;
+            background-image: url(student_logo.webp);
+            background-size: cover;
+            border: 2px solid transparent;
+            border-collapse: collapse;
+            border-right: 2px solid black;
+        }
+
+        #student:hover {
+            border: 2px solid greenyellow;
+        }
+
+        #student_label{
             position: absolute;
-            top : 75%;
-            border : 1px solid black;
-            border-radius: 10%;
+            bottom : 10%;
+            left : 16%;
         }
 
-        #nav {
-            display: inline;
-            position: fixed;
-            top : 180px;
-            left : 650px;
+        #staff_label{
+            position: absolute;
+            bottom : 10%;
+            right : 20%;
         }
 
-        .nav{
+        #student_label,#staff_label {
+            font-size: 1.5rem;
             font-weight: 600;
-            font-size: 24px;
+        } 
+
+        #staff {
+            height: 99%;
+            width: 48%;
+            background-image: url(staff.png);
+            background-size: cover;
+            border-collapse: collapse;
+            border-left: 2px solid black;
+        }
+
+        #staff:hover {
+            border: 2px solid greenyellow;
         }
     </style>
 </head>
@@ -142,25 +119,12 @@
     </header>
 
     <main>
-        <div id="nav">
-            <a class="nav" href="index.html">Student /</a>
-            <a class="nav" href="security_login.html">Staff</a>
-        </div>
+        <p id="welcome">Welcome To JNTUH University College Of Engineering Sultanpur</p>
         <div id="container">
-            <h2 id="login">Login</h2>
-
-            <div id="roll_no">
-                <p id="roll_no_label">Roll No</p>
-                <input id="roll_no_input" type="text" placeholder="Roll No">
-            </div>
-
-            <div id="student_password">
-                <p id="student_password_label">Password</p>
-                <input id="student_password_input" type="password" placeholder="Password">
-            </div>
-            <div id="button">
-                <a href="student_page.html">Login
-            </div>
+            <a id="student" href="student_login.html"></a>
+            <p id="student_label">Student Login</p>
+            <a id="staff" href="security_login.html"></a>
+            <p id="staff_label" >Staff Login</p>
         </div>
     </main>
 </body>
