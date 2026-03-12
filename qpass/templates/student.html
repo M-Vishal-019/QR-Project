@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        *{
+            border : border-box;
+            padding: 0px;
+            margin : 0px;
+        }
+         header {
+            height : 112px;
+            background-color: blue;
+            display: flex;
+            flex-wrap: wrap;
+            background-image: url(background.jpeg);
+            background-size: cover;
+            border-bottom: 2px solid black;
+            width : 100vw;
+            position: relative;
+            right: 10px;
+            bottom: 7px;
+            margin-left: 0.6%;
+        }
+
+        main {
+            width: 100vw;
+            height: 80vh;
+        }
+
+        #collegeName {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 2.8vw;
+            font-weight: 600;
+            position: absolute;
+            right : 5%;
+            top:14px;
+        }
+
+        #Address {
+            color: rgb(24, 3, 121);
+            position: absolute;
+            left: 30%;
+            bottom: 5%;
+            font-size: 1.8vw;
+        }
+
+        #container{
+            height : 80vh;
+            width : 98vw;
+            border-radius: 5%;
+        }
+
+        #photo {
+            height: 4.5cm;
+            width : 3.5cm;
+            background-image: url(tony.jpg);
+            background-size: cover;
+            position: fixed;
+            bottom : 360px;
+            right : 200px;
+        }
+
+        #information {
+            height : 300px;
+            width : 1200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            left : 250px;
+            top : 50px;
+        }
+
+        .info {
+            font-size: 30px;
+            font-family: 'Times New Roman', Times, serif;
+            font-weight: 550;
+            margin-left: 100px;
+        }
+
+        .infol{
+            font-size: 28px;
+            font-family: 'Times New Roman', Times, serif;
+        }
+
+        #name {
+            position: relative;
+            top : -15px;
+        }
+        #roll_no {
+            position: relative;
+            top : -5px;
+        }
+
+        #branch {
+            position: relative;
+            top : 5px;
+        }
+
+        #phone_no {
+            position: relative;
+            top : 15px;
+        }        
+
+        #outing {
+            position: relative;
+            left : 200px;
+            bottom : -30px;
+            height : 30px;
+            width : 110px;
+        }
+
+        button {
+            width :110px;
+            height : 30px;
+            position: relative;
+            left : 952px;
+            top : 15px;
+        }
+
+        #qrcode {
+            position:absolute;
+            top : 100%;
+            left : 35%;
+        }
+
+        a {
+            text-decoration: none;
+            color: black;
+            font-weight: 500;
+            font-size: 1.3rem;
+        }
+
+        #logout_link {
+            position: absolute;
+            left: 7cqb;
+        }
+
+        #history_link {
+            position: absolute;
+            left: 2%;
+        }
+
+        body {
+            
+            background-image: url(05.jpg.jpeg);
+            background-size: cover;
+        }
+        
+    </style>
+</head>
+<body>
+    <header>
+        <img id="collegeLogo" src="	https://jntuhces.ac.in/resp/images_new/jntuhlogo.png" alt="jntuhces logo">
+        <div id="collegeName">JNTUH UNIVERSITY COLLEGE OF ENGINEERING - SULTANPUR</div>
+        <div id="Address">Sulthanpur (V), Choutkur (M), Sangareddy (D), (T.G)-502 273.</div>
+    </header>
+
+    <main>
+        
+        <a href="student_history/" id="history_link">History</a>
+        <a href="home/" id="logout_link">Logout</a>
+        <div id="container">
+            <div id="information">
+                <div id="name">
+                    <span class="info">Name :</span>
+                    <span class="infol">Tony Stark</span>
+                </div>
+                <div id="roll_no">
+                    <span class="info">Roll No :</span>
+                    <span class="infol">24SS1A6635</span>
+                </div>
+                <div id="branch">
+                    <span class="info">Branch :</span>
+                    <span class="infol">CSE (AI&ML)</span>
+                </div>
+                <div id="phone_no">
+                    <span class="info">Phone No :</span>
+                    <span class="infol">9346863732</span>
+                </div>
+
+                <div id="selection">
+                    <select name="OUT" id="outing">
+                        <option value="Outing">Outing</option>
+                        <option value="Home">Home</option>
+                    </select>
+                </div>
+                <button id="createQr" onclick="generateQr()" >Create QR</button>
+                <div id="qrcode"></div>
+            </div>
+        </div>
+        <div id="photo"></div>
+    </main>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+   
+    <script>
+        function generateQr(){
+            let element = document.getElementById("qrcode");
+            let button = document.getElementById("createQr");
+            button.style.display= "none";
+            let qrcode = new QRCode(element, {
+                text: "Stark Industries",
+                width: 180,
+                height: 180,
+                colorDark: "#000000",
+                colorLight: "#ffffff", 
+            });
+        }
+    </script>
+</html>
