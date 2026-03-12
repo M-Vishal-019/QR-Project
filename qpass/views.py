@@ -136,4 +136,4 @@ def late_list(request):
 def logout(request):
     return render(request,"home.html")
 
-# Create your views here.
+
