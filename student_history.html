@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student-History</title>
+    <style>
+        *{
+            border : border-box;
+            padding: 0px;
+            margin : 0px;
+        }
+         header {
+            height : 112px;
+            background-color: blue;
+            display: flex;
+            flex-wrap: wrap;
+            background-image: url(background.jpeg);
+            background-size: cover;
+            border-bottom: 2px solid black;
+            width : 100vw;
+            position: relative;
+            right: 10px;
+            bottom: 7px;
+        }
+
+        main {
+            width: 100vw;
+            height: 80vh;
+        }
+
+        #collegeName {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 2.8vw;
+            font-weight: 600;
+            position: absolute;
+            right : 5%;
+            top:14px;
+        }
+
+        #Address {
+            color: rgb(24, 3, 121);
+            position: absolute;
+            left: 30%;
+            bottom: 5%;
+            font-size: 1.8vw;
+        }
+
+        #container_details {
+            width : 94vw;
+            height: 32%;
+            display: flex;
+            flex-direction: column;
+            flex-wrap: wrap;
+            position: relative;
+            left : 3%;
+            top : 1%;
+            border : 2px solid black;
+            align-items: space-evenly;
+        }
+
+        .credentials {
+            font-weight: 600;
+            font-size: 1.5rem;
+            display: inline-block;
+            padding : 1.5%;
+        }
+
+        #student_photo {
+            border: 2px solid black;
+            height: 4.5cm;
+            width : 3.5cm;
+            position: absolute;
+            right : 10%;
+            top : 4%;
+            background-image: url(tony.jpg);
+            background-size: cover;
+        }
+
+        #student_history_table {
+            width : 95%;
+            border : 2px solid black;
+            position: absolute;
+            left: 2.5%;
+            top : 50%;
+        }
+
+        th ,td {
+            text-align: center;
+            border: 2px solid black;
+            height : 40px;
+        }
+
+        th {
+            background-color: #333333;
+        }
+
+        table {
+            border-collapse: collapse;
+        }
+
+        .in {
+            background-color: #E0F2F1;
+        }
+
+        .out {
+            background-color: #FFF3E0;
+        }
+
+        body {
+            
+            background-image: url(05.jpg.jpeg);
+            background-size: cover;
+        }
+        
+    </style>
+</head>
+<body>
+    <header>
+        <img id="collegeLogo" src="	https://jntuhces.ac.in/resp/images_new/jntuhlogo.png" alt="jntuhces logo">
+        <div id="collegeName">JNTUH UNIVERSITY COLLEGE OF ENGINEERING - SULTANPUR</div>
+        <div id="Address">Sulthanpur (V), Choutkur (M), Sangareddy (D), (T.G)-502 273.</div>
+    </header>
+
+    <main>
+        <div id="container_details">
+            <p class="credentials" id="name">Name :  Tony Stark</p>
+            <p class="credentials" id="rollno">Roll No : 24SS1A6635</p>
+            <p class="credentials id="branch"">Branch : CSE (AI & ML)</p>
+            <p class="credentials id="year"">Year : II</p>
+
+            <div id="student_photo"></div>
+        </div>
+
+        <table id="student_history_table">
+            <tr>
+                <th>S.No</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Status</th>
+                <th>In/Out</th>
+            </tr>
+
+            <tr class = "out">
+                <td>01</td>
+                <td>29/01/2026</td>
+                <td>09:45 AM</td>
+                <td>Outing</td>
+                <td>Out</td>
+            </tr>
+
+            <tr class = "in">
+                <td>02</td>
+                <td>29/01/2026</td>
+                <td>10:45 PM</td>
+                <td>Outing</td>
+                <td >In</td>
+            </tr>
+
+            <tr class = "out">
+                <td>03</td>
+                <td>06/02/2026</td>
+                <td>09:45 AM</td>
+                <td>Outing</td>
+                <td>Out</td>
+            </tr>
+
+            <tr class = "in">
+                <td>04</td>
+                <td>06/02/2026</td>
+                <td>01:45 PM</td>
+                <td>Outing</td>
+                <td >In</td>
+            </tr>
+        </table>
+    </main>
+</body>
+</html>

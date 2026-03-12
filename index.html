@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR-Pass</title>
+    <style>
+        *{
+            border : border-box;
+            padding: 0px;
+            margin : 0px;
+        }
+         header {
+            height : 112px;
+            background-color: blue;
+            display: flex;
+            flex-wrap: wrap;
+            background-image: url(background.jpeg);
+            background-size: cover;
+            border-bottom: 2px solid black;
+            width : 100vw;
+            position: relative;
+            right: 10px;
+            bottom: 7px;
+            margin-left: 0.6%;
+        }
+        body {
+            
+            background-image: url(05.jpg.jpeg);
+            background-size: cover;
+        }
+        main {
+            width: 100vw;
+            height: 80vh;
+        }
+
+        #collegeName {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 2.8vw;
+            font-weight: 600;
+            position: absolute;
+            right : 5%;
+            top:14px;
+        }
+
+        #Address {
+            color: rgb(24, 3, 121);
+            position: absolute;
+            left: 30%;
+            bottom: 5%;
+            font-size: 1.8vw;
+        }
+
+        #welcome {
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            position : relative;
+            top:10%;
+        }
+
+        #container {
+            height : 60%;
+            width: 60%;
+            border: 2px solid black;
+            display: flex;
+            align-items: center;
+            position: relative;
+            left: 18%;
+            top : 20%;
+        }
+
+        #student {
+            height: 99%;
+            width: 50%;
+            background-image: url(student_logo.webp);
+            background-size: cover;
+            border: 2px solid transparent;
+            border-collapse: collapse;
+            border-right: 2px solid black;
+        }
+
+        #student:hover {
+            border: 2px solid greenyellow;
+        }
+
+        #student_label{
+            position: absolute;
+            bottom : 10%;
+            left : 16%;
+        }
+
+        #staff_label{
+            position: absolute;
+            bottom : 10%;
+            right : 20%;
+        }
+
+        #student_label,#staff_label {
+            font-size: 1.5rem;
+            font-weight: 600;
+        } 
+
+        #staff {
+            height: 99%;
+            width: 50%;
+            background-image: url(staff.png);
+            background-size: cover;
+            border-collapse: collapse;
+            border-left: 2px solid black;
+            background-color: white;
+        }
+
+        #staff:hover {
+            border: 2px solid greenyellow;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img id="collegeLogo" src="	https://jntuhces.ac.in/resp/images_new/jntuhlogo.png" alt="jntuhces logo">
+        <div id="collegeName">JNTUH UNIVERSITY COLLEGE OF ENGINEERING - SULTANPUR</div>
+        <div id="Address">Sulthanpur (V), Choutkur (M), Sangareddy (D), (T.G)-502 273.</div>
+    </header>
+
+    <main>
+        <p id="welcome">Welcome To JNTUH University College Of Engineering Sultanpur</p>
+        <div id="container">
+            <a id="student" href="student_login.html"></a>
+            <p id="student_label">Student Login</p>
+            <a id="staff" href="security_login.html"></a>
+            <p id="staff_label" >Staff Login</p>
+        </div>
+    </main>
+</body>
+</html>
