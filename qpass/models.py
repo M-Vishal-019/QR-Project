@@ -14,7 +14,6 @@ class Student(models.Model):
         return self.roll_no
     
 
-   
 class Security(models.Model):
     security_id = models.IntegerField(primary_key=True),
 
