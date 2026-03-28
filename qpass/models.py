@@ -6,6 +6,7 @@ class Student(models.Model):
     branch = models.CharField(),
     year = models.CharField(max_length=2),
     phone_no = models.CharField(max_length=15),
+    photo = models.ImageField();
 
     #@property
     #def total_outings(self):
