@@ -1,0 +1,1552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SellerGrid — Review Management Dashboard</title>
+
+  <style>
+    /* ============================================================
+       CSS VARIABLES — change these to retheme the whole page
+    ============================================================ */
+    :root {
+      --primary:       #4361ee;   /* main blue */
+      --primary-light: #eef0fd;   /* pale blue for hover/bg tints */
+      --primary-dark:  #2f4ac9;   /* darker blue for hover states */
+      --bg:            #f8f9fa;   /* page background */
+      --white:         #ffffff;
+      --border:        #e2e6ea;
+      --text-main:     #1a1d23;
+      --text-muted:    #6b7280;
+      --text-light:    #9ca3af;
+      --success:       #22c55e;
+      --warning:       #f59e0b;
+      --danger:        #ef4444;
+      --amazon:        #ff9900;
+      --shopify:       #96bf48;
+      --ebay:          #0064d2;
+      --radius:        10px;
+      --shadow:        0 1px 4px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.06);
+      --shadow-sm:     0 1px 3px rgba(0,0,0,0.07);
+    }
+
+    /* ============================================================
+       RESET & BASE
+    ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text-main);
+      font-size: 14px;
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    /* ============================================================
+       LAYOUT WRAPPER
+    ============================================================ */
+    .layout {
+      display: grid;
+      /* sidebar | main content */
+      grid-template-columns: 220px 1fr;
+      grid-template-rows: 60px 1fr auto;  /* header | body | footer */
+      grid-template-areas:
+        "header  header"
+        "sidebar main"
+        "footer  footer";
+      min-height: 100vh;
+    }
+
+    /* ============================================================
+       HEADER
+    ============================================================ */
+    header {
+      grid-area: header;
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Logo area */
+    .header-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .logo-icon {
+      width: 32px;
+      height: 32px;
+      background: var(--primary);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: -0.5px;
+    }
+
+    .logo-text {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-main);
+      letter-spacing: -0.3px;
+    }
+
+    .logo-text span {
+      color: var(--primary);
+    }
+
+    /* Header right — notifications + profile */
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    /* Alert badge in header */
+    .header-alert {
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      color: #856404;
+      font-size: 12px;
+      font-weight: 500;
+      padding: 4px 10px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      cursor: default;
+    }
+
+    /* Notification bell */
+    .notif-btn {
+      position: relative;
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .notif-dot {
+      position: absolute;
+      top: 6px;
+      right: 7px;
+      width: 8px;
+      height: 8px;
+      background: var(--danger);
+      border-radius: 50%;
+      border: 2px solid white;
+    }
+
+    /* Profile dropdown (static — no JS) */
+    .profile {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      padding: 4px 10px 4px 4px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--white);
+    }
+
+    .avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .profile-name {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-main);
+    }
+
+    .profile-role {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .chevron {
+      color: var(--text-muted);
+      font-size: 10px;
+      margin-left: 2px;
+    }
+
+    /* ============================================================
+       SIDEBAR NAV
+    ============================================================ */
+    aside {
+      grid-area: sidebar;
+      background: var(--white);
+      border-right: 1px solid var(--border);
+      padding: 20px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .nav-label {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--text-light);
+      padding: 8px 12px 4px;
+      margin-top: 8px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      border-radius: 8px;
+      font-size: 13.5px;
+      font-weight: 500;
+      color: var(--text-muted);
+      cursor: pointer;
+      text-decoration: none;
+      transition: background .15s, color .15s;
+    }
+
+    .nav-item:hover {
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+
+    /* Active nav item */
+    .nav-item.active {
+      background: var(--primary-light);
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .nav-item .nav-icon { font-size: 15px; }
+
+    /* Badge on nav item (e.g. "89" pending) */
+    .nav-badge {
+      margin-left: auto;
+      background: var(--danger);
+      color: white;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 10px;
+      min-width: 20px;
+      text-align: center;
+    }
+
+    .nav-badge.neutral {
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+
+    /* ============================================================
+       MAIN CONTENT AREA
+    ============================================================ */
+    main {
+      grid-area: main;
+      padding: 24px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    /* Page title row */
+    .page-title-row {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .page-title {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+
+    .page-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* ============================================================
+       BONUS: AI / ALERT SMART FEATURE BANNER
+    ============================================================ */
+    .smart-banner {
+      background: linear-gradient(135deg, #fff8e1 0%, #fef3c7 100%);
+      border: 1px solid #fbbf24;
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .smart-banner-text {
+      flex: 1;
+      font-size: 13px;
+      color: #92400e;
+    }
+
+    .smart-banner-text strong { color: #78350f; }
+
+    /* Disabled "smart" button */
+    .btn-ai {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 7px 14px;
+      border-radius: 7px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: not-allowed;     /* disabled — no JS needed */
+      opacity: 0.75;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .btn-ai:hover { opacity: 0.85; }
+
+    /* ============================================================
+       STATS CARDS (4-column grid)
+    ============================================================ */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .stat-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Decorative left accent bar */
+    .stat-card::before {
+      content: "";
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 4px;
+      border-radius: 10px 0 0 10px;
+    }
+
+    .stat-card.blue::before   { background: var(--primary); }
+    .stat-card.green::before  { background: var(--success); }
+    .stat-card.orange::before { background: var(--warning); }
+    .stat-card.red::before    { background: var(--danger); }
+
+    .stat-label {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--text-muted);
+    }
+
+    .stat-value {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      color: var(--text-main);
+      line-height: 1;
+    }
+
+    .stat-subtext {
+      font-size: 12px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .stat-icon {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      font-size: 26px;
+      opacity: 0.18;
+    }
+
+    /* ============================================================
+       CONTENT ROW — chart + insights side by side
+    ============================================================ */
+    .content-row {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 16px;
+      align-items: start;
+    }
+
+    /* ============================================================
+       CHART CARD
+    ============================================================ */
+    .card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .card-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .card-body { padding: 20px; }
+
+    /* Legend for chart */
+    .chart-legend {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    /* Bar chart made purely with CSS divs */
+    .bar-chart {
+      display: flex;
+      align-items: flex-end;
+      gap: 6px;
+      height: 120px;
+      padding-top: 10px;
+    }
+
+    .bar-group {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .bar {
+      width: 100%;
+      border-radius: 4px 4px 0 0;
+      transition: opacity .2s;
+    }
+
+    .bar:hover { opacity: 0.75; }
+
+    .bar.primary { background: var(--primary); }
+    .bar.success { background: var(--success); }
+
+    .bar-label {
+      font-size: 10px;
+      color: var(--text-muted);
+      text-align: center;
+      margin-top: 4px;
+    }
+
+    /* Axis line under chart */
+    .chart-axis {
+      height: 1px;
+      background: var(--border);
+      margin-top: 6px;
+    }
+
+    /* ============================================================
+       INSIGHTS SIDEBAR CARD
+    ============================================================ */
+    .insights-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .insights-header {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .insights-title {
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .insights-body { padding: 14px 18px; display: flex; flex-direction: column; gap: 12px; }
+
+    .insight-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+    }
+
+    .insight-bullet {
+      font-size: 16px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .insight-text {
+      font-size: 12.5px;
+      color: var(--text-main);
+      line-height: 1.4;
+    }
+
+    .insight-text strong { color: var(--text-main); font-weight: 600; }
+    .insight-text span   { color: var(--text-muted); font-size: 11.5px; display: block; margin-top: 2px; }
+
+    /* Mini platform breakdown */
+    .platform-breakdown { display: flex; flex-direction: column; gap: 7px; }
+
+    .platform-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+    }
+
+    .platform-name { width: 60px; color: var(--text-muted); }
+
+    .platform-bar-wrap {
+      flex: 1;
+      height: 6px;
+      background: var(--bg);
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .platform-bar-fill {
+      height: 100%;
+      border-radius: 10px;
+    }
+
+    .platform-pct { width: 32px; text-align: right; font-weight: 600; color: var(--text-main); }
+
+    /* ============================================================
+       FILTER BAR
+    ============================================================ */
+    .filter-bar {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .filter-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    /* Base style shared by select, date input, search */
+    .filter-control {
+      height: 36px;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      background: var(--bg);
+      color: var(--text-main);
+      font-size: 13px;
+      padding: 0 10px;
+      outline: none;
+      font-family: inherit;
+    }
+
+    .filter-control:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(67,97,238,0.12);
+    }
+
+    select.filter-control { padding-right: 28px; appearance: auto; }
+
+    .search-wrap {
+      flex: 1;
+      min-width: 180px;
+      position: relative;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 13px;
+      color: var(--text-light);
+      pointer-events: none;
+    }
+
+    .search-wrap .filter-control {
+      width: 100%;
+      padding-left: 30px;
+    }
+
+    /* Apply button */
+    .btn-primary {
+      height: 36px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 7px;
+      padding: 0 16px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .btn-primary:hover { background: var(--primary-dark); }
+
+    .btn-outline {
+      height: 36px;
+      background: var(--white);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      padding: 0 14px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .btn-outline:hover { background: var(--bg); color: var(--text-main); }
+
+    /* ============================================================
+       REVIEWS TABLE
+    ============================================================ */
+    .table-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .table-header {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .table-title { font-size: 14px; font-weight: 700; }
+
+    .table-meta { font-size: 12px; color: var(--text-muted); }
+
+    /* Wrapper that enables horizontal scrolling on small screens.
+       overflow-x: auto adds a scrollbar only when the table is
+       wider than its container — on large screens nothing changes. */
+    .table-scroll {
+      overflow-x: auto;
+      /* Smooth momentum scrolling on iOS Safari */
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* The actual table */
+    table {
+      /* 100% on wide screens; min-width stops columns squishing
+         on narrow screens — the wrapper scrolls instead. */
+      width: 100%;
+      min-width: 800px;
+      border-collapse: collapse;
+    }
+
+    thead th {
+      background: var(--bg);
+      padding: 10px 16px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    /* Sortable column header look */
+    thead th.sortable {
+      cursor: pointer;
+      user-select: none;
+    }
+
+    thead th.sortable:hover { color: var(--primary); }
+
+    tbody tr {
+      border-bottom: 1px solid #f1f3f5;
+      transition: background .12s;
+    }
+
+    tbody tr:last-child { border-bottom: none; }
+
+    tbody tr:hover { background: #eef2ff; }
+
+    tbody td {
+      padding: 13px 16px;
+      vertical-align: middle;
+      font-size: 13px;
+      color: var(--text-main);
+    }
+
+    /* Product name + SKU */
+    .product-cell { display: flex; flex-direction: column; gap: 2px; }
+    .product-name { font-weight: 600; font-size: 13px; }
+    .product-sku  { font-size: 11px; color: var(--text-light); }
+
+    /* Review preview text */
+    .review-preview {
+      max-width: 220px;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-style: italic;
+    }
+
+    /* Star rating */
+    .stars { color: #f59e0b; letter-spacing: 1px; font-size: 13px; }
+    .stars-grey { color: #d1d5db; font-size: 13px; }
+
+    /* Platform badge */
+    .platform-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 9px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .platform-badge.amazon  { background: #fff3e0; color: #e65100; }
+    .platform-badge.shopify { background: #f1f8e9; color: #33691e; }
+    .platform-badge.ebay    { background: #e3f2fd; color: #1565c0; }
+
+    /* Status badge */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 9px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .status-badge.pending  { background: #fff1f1; color: #c0392b; border: 1px solid #fca5a5; }
+    .status-badge.replied  { background: #f0fdf4; color: #166534; border: 1px solid #86efac; }
+    .status-badge.ignored  { background: #f9fafb; color: #6b7280; border: 1px solid #d1d5db; }
+    .status-badge.new      { background: #eff6ff; color: #1d4ed8; border: 1px solid #93c5fd; }
+
+    /* Action buttons in table */
+    .action-btns { display: flex; gap: 5px; flex-wrap: nowrap; }
+
+    .btn-xs {
+      padding: 4px 10px;
+      border-radius: 5px;
+      font-size: 11px;
+      font-weight: 600;
+      border: 1px solid;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .btn-xs.reply   { background: var(--primary-light); color: var(--primary);  border-color: #c7d2fe; }
+    .btn-xs.ignore  { background: #f9fafb;              color: var(--text-muted); border-color: var(--border); }
+    .btn-xs.view    { background: #f0fdf4;              color: #166534;           border-color: #86efac; }
+
+    .btn-xs.reply:hover  { background: var(--primary); color: white; }
+    .btn-xs.ignore:hover { background: #f3f4f6; }
+
+    /* ============================================================
+       TABLE PAGINATION ROW
+    ============================================================ */
+    .pagination {
+      padding: 12px 20px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      background: var(--bg);
+    }
+
+    .pagination-info { font-size: 12px; color: var(--text-muted); }
+
+    .pagination-btns { display: flex; gap: 4px; }
+
+    .page-btn {
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--white);
+      font-size: 12px;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    .page-btn.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+      font-weight: 700;
+    }
+
+    /* ============================================================
+       FOOTER
+    ============================================================ */
+    footer {
+      grid-area: footer;
+      background: var(--white);
+      border-top: 1px solid var(--border);
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .footer-copy { font-size: 12px; color: var(--text-muted); }
+
+    .footer-links { display: flex; gap: 16px; }
+
+    .footer-link {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .footer-link:hover { color: var(--primary); }
+
+    /* ============================================================
+       RESPONSIVE — collapse sidebar + reflow at ≤ 900px
+    ============================================================ */
+    @media (max-width: 900px) {
+      .layout {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+          "header"
+          "main"
+          "footer";
+      }
+
+      aside { display: none; }  /* hide sidebar on small screens */
+
+      .stats-grid          { grid-template-columns: repeat(2, 1fr); }
+      .content-row         { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 580px) {
+      .stats-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ============================================================
+     LAYOUT WRAPPER
+============================================================ -->
+<div class="layout">
+
+
+  <!-- ============================================================
+       HEADER
+  ============================================================ -->
+  <header>
+
+    <!-- Left: Logo -->
+    <a href="#" class="header-logo">
+      <div class="logo-icon">SG</div>
+      <span class="logo-text">Seller<span>Grid</span></span>
+    </a>
+
+    <!-- Right: alert + notification + profile -->
+    <div class="header-right">
+
+      <!-- BONUS: Spike alert shown in header -->
+      <div class="header-alert">
+        🔔 Alert: Spike in 1-star reviews on Amazon (+34% today)
+      </div>
+
+      <!-- Notification bell -->
+      <div class="notif-btn">
+        🔔
+        <div class="notif-dot"></div>
+      </div>
+
+      <!-- User profile (static dropdown visual) -->
+      <div class="profile">
+        <div class="avatar">JD</div>
+        <div>
+          <div class="profile-name">Jane Doe</div>
+          <div class="profile-role">Store Owner</div>
+        </div>
+        <span class="chevron">▾</span>
+      </div>
+
+    </div>
+  </header>
+
+
+  <!-- ============================================================
+       SIDEBAR NAV
+  ============================================================ -->
+  <aside>
+
+    <span class="nav-label">Main</span>
+
+    <!-- Active page = Dashboard -->
+    <a href="#" class="nav-item active">
+      <span class="nav-icon">📊</span> Dashboard
+    </a>
+
+    <a href="#" class="nav-item">
+      <span class="nav-icon">⭐</span> All Reviews
+      <span class="nav-badge neutral">12.4k</span>
+    </a>
+
+    <a href="#" class="nav-item">
+      <span class="nav-icon">⏳</span> Pending Replies
+      <span class="nav-badge">89</span>  <!-- red badge = needs attention -->
+    </a>
+
+    <a href="#" class="nav-item">
+      <span class="nav-icon">📦</span> Products
+    </a>
+
+    <span class="nav-label">Platforms</span>
+
+    <a href="#" class="nav-item">
+      <span class="nav-icon">🟠</span> Amazon
+    </a>
+
+    <a href="#" class="nav-item">
+      <span class="nav-icon">🟢</span> Shopify
+    </a>
+
+    <a href="#" class="nav-item">
+      <span class="nav-icon">🔵</span> eBay
+    </a>
+
+    <span class="nav-label">Settings</span>
+
+    <a href="#" class="nav-item">
+      <span class="nav-icon">⚙️</span> Settings
+    </a>
+
+    <a href="#" class="nav-item">
+      <span class="nav-icon">🔗</span> Integrations
+    </a>
+
+  </aside>
+
+
+  <!-- ============================================================
+       MAIN CONTENT
+  ============================================================ -->
+  <main>
+
+    <!-- Page title row -->
+    <div class="page-title-row">
+      <div>
+        <h1 class="page-title">Review Dashboard</h1>
+        <p class="page-subtitle">Manage customer reviews across all your sales channels.</p>
+      </div>
+      <button class="btn-primary">＋ Export Report</button>
+    </div>
+
+
+    <!-- ============================================================
+         BONUS: Smart AI Feature Banner
+    ============================================================ -->
+    <div class="smart-banner">
+      <span style="font-size:20px">⚠️</span>
+      <div class="smart-banner-text">
+        <strong>Spike detected:</strong> 1-star reviews on Amazon increased by <strong>34%</strong> today.
+        Top complaint keyword: <strong>"shipping delay"</strong>. Consider responding proactively.
+      </div>
+      <!-- Disabled AI button — tooltip via title attribute -->
+      <button class="btn-ai" title="AI feature coming soon — will auto-generate reply suggestions">
+        ✨ AI Sentiment Summary
+        <span style="font-size:10px; opacity:.8;">(coming soon)</span>
+      </button>
+    </div>
+
+
+    <!-- ============================================================
+         STATS CARDS
+    ============================================================ -->
+    <div class="stats-grid">
+
+      <!-- Card 1: Total Reviews -->
+      <div class="stat-card blue">
+        <div class="stat-icon">📝</div>
+        <span class="stat-label">Total Reviews</span>
+        <span class="stat-value">12,450</span>
+        <span class="stat-subtext">🟢 +248 new today</span>
+      </div>
+
+      <!-- Card 2: Avg Rating -->
+      <div class="stat-card green">
+        <div class="stat-icon">⭐</div>
+        <span class="stat-label">Avg Rating</span>
+        <span class="stat-value">4.3 ⭐</span>
+        <span class="stat-subtext">↑ +0.1 vs last month</span>
+      </div>
+
+      <!-- Card 3: New Today -->
+      <div class="stat-card orange">
+        <div class="stat-icon">🆕</div>
+        <span class="stat-label">New Today</span>
+        <span class="stat-value">+248</span>
+        <span class="stat-subtext">📦 Across 3 platforms</span>
+      </div>
+
+      <!-- Card 4: Pending Replies -->
+      <div class="stat-card red">
+        <div class="stat-icon">💬</div>
+        <span class="stat-label">Pending Replies</span>
+        <span class="stat-value">89 ⚠️</span>
+        <span class="stat-subtext">🔴 Oldest: 3 days ago</span>
+      </div>
+
+    </div>
+
+
+    <!-- ============================================================
+         CHART + INSIGHTS ROW
+    ============================================================ -->
+    <div class="content-row">
+
+      <!-- Bar Chart Card -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">📈 Reviews Trend — Last 30 Days</span>
+          <div class="chart-legend">
+            <div class="legend-item">
+              <div class="legend-dot" style="background:var(--primary)"></div>
+              Total Reviews
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background:var(--success)"></div>
+              Replied
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+
+          <!-- Pure CSS bar chart — 7 bars representing weeks/days -->
+          <div class="bar-chart">
+
+            <!-- Each bar-group = one data point (day/week label) -->
+
+            <div class="bar-group">
+              <div class="bar primary" style="height:55px"></div>
+              <div class="bar success" style="height:38px"></div>
+              <div class="bar-label">Mar 1</div>
+            </div>
+
+            <div class="bar-group">
+              <div class="bar primary" style="height:70px"></div>
+              <div class="bar success" style="height:50px"></div>
+              <div class="bar-label">Mar 5</div>
+            </div>
+
+            <div class="bar-group">
+              <div class="bar primary" style="height:48px"></div>
+              <div class="bar success" style="height:30px"></div>
+              <div class="bar-label">Mar 9</div>
+            </div>
+
+            <div class="bar-group">
+              <div class="bar primary" style="height:90px"></div>
+              <div class="bar success" style="height:65px"></div>
+              <div class="bar-label">Mar 13</div>
+            </div>
+
+            <div class="bar-group">
+              <div class="bar primary" style="height:62px"></div>
+              <div class="bar success" style="height:44px"></div>
+              <div class="bar-label">Mar 17</div>
+            </div>
+
+            <div class="bar-group">
+              <div class="bar primary" style="height:105px"></div>
+              <div class="bar success" style="height:72px"></div>
+              <div class="bar-label">Mar 21</div>
+            </div>
+
+            <!-- Last bar highlighted — spike -->
+            <div class="bar-group">
+              <div class="bar" style="height:118px; background:#ef4444; border-radius:4px 4px 0 0;"
+                   title="Spike: 248 reviews on Mar 25"></div>
+              <div class="bar success" style="height:40px"></div>
+              <div class="bar-label" style="color:#ef4444; font-weight:700;">Mar 25 🔴</div>
+            </div>
+
+          </div>
+
+          <div class="chart-axis"></div>
+
+          <!-- Caption clarifying the x-axis time grouping -->
+          <p style="font-size:11px; color:var(--text-light); margin-top:6px; text-align:center; font-style:italic;">
+            Each bar represents a 4-day period
+          </p>
+
+          <p style="font-size:11px; color:var(--text-muted); margin-top:8px;">
+            🔴 Spike on Mar 25 — 248 reviews in one day. Investigate the source.
+          </p>
+
+        </div>
+      </div>
+
+
+      <!-- Insights Sidebar Card -->
+      <div class="insights-card">
+        <div class="insights-header">
+          <span>💡</span>
+          <span class="insights-title">Quick Insights</span>
+        </div>
+        <div class="insights-body">
+
+          <div class="insight-item">
+            <span class="insight-bullet">🚢</span>
+            <div class="insight-text">
+              <strong>Top complaint: Shipping delay</strong>
+              <span>Mentioned in 43% of 1-star reviews this week</span>
+            </div>
+          </div>
+
+          <div class="insight-item">
+            <span class="insight-bullet">🏆</span>
+            <div class="insight-text">
+              <strong>Most praised: Product quality</strong>
+              <span>Positive keyword in 67% of 4–5 star reviews</span>
+            </div>
+          </div>
+
+          <div class="insight-item">
+            <span class="insight-bullet">📊</span>
+            <div class="insight-text">
+              <strong>Reply rate this month: 71%</strong>
+              <span>Up from 58% last month — great work!</span>
+            </div>
+          </div>
+
+          <!-- Platform breakdown mini-chart -->
+          <div style="border-top: 1px solid var(--border); padding-top: 12px;">
+            <p style="font-size: 11px; font-weight: 700; text-transform: uppercase;
+                      letter-spacing: .06em; color: var(--text-muted); margin-bottom: 10px;">
+              Reviews by Platform
+            </p>
+            <div class="platform-breakdown">
+
+              <div class="platform-row">
+                <span class="platform-name">🟠 Amazon</span>
+                <div class="platform-bar-wrap">
+                  <div class="platform-bar-fill" style="width:58%; background:#ff9900;"></div>
+                </div>
+                <span class="platform-pct">58%</span>
+              </div>
+
+              <div class="platform-row">
+                <span class="platform-name">🟢 Shopify</span>
+                <div class="platform-bar-wrap">
+                  <div class="platform-bar-fill" style="width:27%; background:#96bf48;"></div>
+                </div>
+                <span class="platform-pct">27%</span>
+              </div>
+
+              <div class="platform-row">
+                <span class="platform-name">🔵 eBay</span>
+                <div class="platform-bar-wrap">
+                  <div class="platform-bar-fill" style="width:15%; background:#0064d2;"></div>
+                </div>
+                <span class="platform-pct">15%</span>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+    <!-- end content-row -->
+
+
+    <!-- ============================================================
+         FILTER BAR
+    ============================================================ -->
+    <div class="filter-bar">
+
+      <span class="filter-label">Filter by:</span>
+
+      <!-- Platform dropdown -->
+      <select class="filter-control" aria-label="Platform filter">
+        <option>🌐 All Platforms</option>
+        <option>🟠 Amazon</option>
+        <option>🟢 Shopify</option>
+        <option>🔵 eBay</option>
+      </select>
+
+      <!-- Rating dropdown -->
+      <select class="filter-control" aria-label="Rating filter">
+        <option>⭐ All Ratings</option>
+        <option>⭐⭐⭐⭐⭐ 5 Stars</option>
+        <option>⭐⭐⭐⭐ 4 Stars</option>
+        <option>⭐⭐⭐ 3 Stars</option>
+        <option>⭐⭐ 2 Stars</option>
+        <option>⭐ 1 Star</option>
+      </select>
+
+      <!-- Status dropdown -->
+      <select class="filter-control" aria-label="Status filter">
+        <option>📋 All Statuses</option>
+        <option>🔴 Pending</option>
+        <option>🟢 Replied</option>
+        <option>⚫ Ignored</option>
+        <option>🔵 New</option>
+      </select>
+
+      <!-- Date range (visual only — no datepicker JS needed) -->
+      <input
+        type="text"
+        class="filter-control"
+        value="📅  Mar 1 – Mar 31, 2026"
+        readonly
+        aria-label="Date range"
+        style="min-width: 190px; cursor: pointer; color: var(--text-muted);"
+      />
+
+      <!-- Search bar -->
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input
+          type="text"
+          class="filter-control"
+          placeholder="Search reviews..."
+          aria-label="Search reviews"
+        />
+      </div>
+
+      <!-- Apply + Reset -->
+      <button class="btn-primary">Apply</button>
+      <button class="btn-outline">Reset</button>
+
+    </div>
+
+
+    <!-- ============================================================
+         REVIEWS TABLE
+    ============================================================ -->
+    <div class="table-card">
+
+      <div class="table-header">
+        <span class="table-title">📝 Customer Reviews</span>
+        <span class="table-meta">Showing 5 of 12,450 results</span>
+      </div>
+
+      <!-- table-scroll div: on small screens this scrolls horizontally
+           while the card header and pagination row stay fixed above/below -->
+      <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Review Preview</th>
+            <th class="sortable">Rating ↕</th>
+            <th>Platform</th>
+            <th class="sortable">Date ↕</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+
+          <!-- Row 1 — Pending reply -->
+          <tr>
+            <td>
+              <div class="product-cell">
+                <span class="product-name">Wireless Earbuds Pro</span>
+                <span class="product-sku">SKU: WEP-200-BLK</span>
+              </div>
+            </td>
+            <td>
+              <span class="review-preview">"Great sound but battery dies fast after 2 weeks..."</span>
+            </td>
+            <td>
+              <span class="stars">⭐⭐⭐⭐</span>
+              <span style="font-size:11px; color:var(--text-muted); margin-left:3px;">4.0</span>
+            </td>
+            <td><span class="platform-badge amazon">🟠 Amazon</span></td>
+            <td style="color:var(--text-muted); font-size:12px;">Mar 20, 2026</td>
+            <td><span class="status-badge pending">🔴 Pending</span></td>
+            <td>
+              <div class="action-btns">
+                <button class="btn-xs reply">💬 Reply</button>
+                <button class="btn-xs ignore">Ignore</button>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Row 2 — Replied -->
+          <tr>
+            <td>
+              <div class="product-cell">
+                <span class="product-name">Yoga Mat Premium</span>
+                <span class="product-sku">SKU: YMP-001-PUR</span>
+              </div>
+            </td>
+            <td>
+              <span class="review-preview">"Absolutely love this mat! Super grippy and comfortable..."</span>
+            </td>
+            <td>
+              <span class="stars">⭐⭐⭐⭐⭐</span>
+              <span style="font-size:11px; color:var(--text-muted); margin-left:3px;">5.0</span>
+            </td>
+            <td><span class="platform-badge shopify">🟢 Shopify</span></td>
+            <td style="color:var(--text-muted); font-size:12px;">Mar 19, 2026</td>
+            <td><span class="status-badge replied">🟢 Replied</span></td>
+            <td>
+              <div class="action-btns">
+                <button class="btn-xs view">👁 View</button>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Row 3 — New (1-star, spike review) -->
+          <tr style="background: #fff8f8;">  <!-- faint red tint for 1-star -->
+            <td>
+              <div class="product-cell">
+                <span class="product-name">USB-C Charging Hub</span>
+                <span class="product-sku">SKU: UCH-4PT-SLV</span>
+              </div>
+            </td>
+            <td>
+              <span class="review-preview">"Arrived 3 weeks late. Packaging was damaged and..."</span>
+            </td>
+            <td>
+              <span class="stars">⭐</span>
+              <span class="stars-grey">⭐⭐⭐⭐</span>
+              <span style="font-size:11px; color:var(--danger); margin-left:3px; font-weight:700;">1.0</span>
+            </td>
+            <td><span class="platform-badge amazon">🟠 Amazon</span></td>
+            <td style="color:var(--text-muted); font-size:12px;">Mar 25, 2026</td>
+            <td><span class="status-badge new">🔵 New</span></td>
+            <td>
+              <div class="action-btns">
+                <button class="btn-xs reply">💬 Reply</button>
+                <button class="btn-xs ignore">Ignore</button>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Row 4 — Ignored -->
+          <tr>
+            <td>
+              <div class="product-cell">
+                <span class="product-name">Foam Roller Set</span>
+                <span class="product-sku">SKU: FRS-3PC-BLU</span>
+              </div>
+            </td>
+            <td>
+              <span class="review-preview">"Pretty average. Does the job but nothing special about it."</span>
+            </td>
+            <td>
+              <span class="stars">⭐⭐⭐</span>
+              <span class="stars-grey">⭐⭐</span>
+              <span style="font-size:11px; color:var(--text-muted); margin-left:3px;">3.0</span>
+            </td>
+            <td><span class="platform-badge ebay">🔵 eBay</span></td>
+            <td style="color:var(--text-muted); font-size:12px;">Mar 18, 2026</td>
+            <td><span class="status-badge ignored">⚫ Ignored</span></td>
+            <td>
+              <div class="action-btns">
+                <button class="btn-xs reply">💬 Reply</button>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Row 5 — Pending, 2-star -->
+          <tr>
+            <td>
+              <div class="product-cell">
+                <span class="product-name">Stainless Water Bottle</span>
+                <span class="product-sku">SKU: SWB-750-GRN</span>
+              </div>
+            </td>
+            <td>
+              <span class="review-preview">"Lid leaks after a month. Contacted support, no response yet."</span>
+            </td>
+            <td>
+              <span class="stars">⭐⭐</span>
+              <span class="stars-grey">⭐⭐⭐</span>
+              <span style="font-size:11px; color:var(--warning); margin-left:3px; font-weight:700;">2.0</span>
+            </td>
+            <td><span class="platform-badge shopify">🟢 Shopify</span></td>
+            <td style="color:var(--text-muted); font-size:12px;">Mar 17, 2026</td>
+            <td><span class="status-badge pending">🔴 Pending</span></td>
+            <td>
+              <div class="action-btns">
+                <button class="btn-xs reply">💬 Reply</button>
+                <button class="btn-xs ignore">Ignore</button>
+              </div>
+            </td>
+          </tr>
+
+        </tbody>
+
+        <!--
+          DEMO TIP: To show the empty state during your recording,
+          uncomment the <tr> block below (remove the opening and
+          closing HTML comment markers). Comment it back out to
+          restore the normal rows.
+
+        <tr>
+          <td colspan="7" style="
+            text-align: center;
+            padding: 48px 20px;
+            color: var(--text-muted);
+            font-size: 14px;
+          ">
+            🔍 No reviews match your filters.
+            <span style="display:block; margin-top:6px; font-size:12px; color:var(--text-light);">
+              Try adjusting the platform, rating, or date range above.
+            </span>
+          </td>
+        </tr>
+
+        -->
+      </table>
+      </div><!-- end .table-scroll -->
+
+      <!-- Pagination row —— sits outside the scroll wrapper so it
+           stays full-width and doesn't scroll with the table -->
+      <div class="pagination">
+        <span class="pagination-info">Page 1 of 2,490 — showing 5 per page</span>
+        <div class="pagination-btns">
+          <div class="page-btn">‹</div>
+          <div class="page-btn active">1</div>
+          <div class="page-btn">2</div>
+          <div class="page-btn">3</div>
+          <div class="page-btn">…</div>
+          <div class="page-btn">›</div>
+        </div>
+      </div>
+
+    </div>
+    <!-- end table-card -->
+
+  </main>
+  <!-- end main -->
+
+
+  <!-- ============================================================
+       FOOTER
+  ============================================================ -->
+  <footer>
+    <span class="footer-copy">© 2026 SellerGrid — Review Management Platform</span>
+    <div class="footer-links">
+      <a href="#" class="footer-link">Privacy Policy</a>
+      <a href="#" class="footer-link">Terms of Service</a>
+      <a href="#" class="footer-link">Help Center</a>
+      <a href="#" class="footer-link">Contact Support</a>
+    </div>
+  </footer>
+
+</div>
+<!-- end layout -->
+
+</body>
+</html>

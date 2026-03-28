@@ -3,9 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Student Login - JNTUHCES</title>
+
+    {% load static %}
 
     <style>
+<<<<<<< Updated upstream:index.html
         header {
             height : 112px;
             background-color: blue;
@@ -31,10 +34,54 @@
             font-weight: 600;
             position: relative;
             top:14px;
+=======
+        /* ✅ Fixed: box-sizing instead of border */
+        * {
+            box-sizing: border-box;
+            padding: 0;
+            margin: 0;
+        }
+
+        body {
+            background-image: url("{% static 'images/05.jpg.jpeg' %}");
+            background-size: cover;
+            background-position: center;
+            font-family: 'Times New Roman', Times, serif;
+            min-height: 100vh;
+        }
+
+        header {
+            height: 112px;
+            background-color: rgba(0, 0, 255, 0.8);
+            background-image: url("{% static 'images/background.jpeg' %}");
+            background-size: cover;
+            border-bottom: 2px solid black;
+            width: 100%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #collegeLogo {
+            height: 80px;
+            position: absolute;
+            left: 20px;
+            top: 16px;
+        }
+
+        #collegeName {
+            font-size: 2.5vw;
+            font-weight: 600;
+            color: white;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+>>>>>>> Stashed changes:qpass/templates/student_login.html
         }
 
         #Address {
             color: rgb(24, 3, 121);
+<<<<<<< Updated upstream:index.html
             position: relative;
             left: 500px;
             bottom: 30px;
@@ -55,11 +102,41 @@
             align-items:center ;
             position: relative;
             top : 100px;
+=======
+            position: absolute;
+            bottom: 10px;
+            font-size: 1.2vw;
+            font-weight: 600;
+        }
+
+        main {
+            width: 100%;
+            height: calc(100vh - 112px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #container {
+            height: 55%;
+            width: 20%;
+            min-width: 350px;
+            border: 3px solid black;
+            border-radius: 5%;
+            background-color: rgba(255, 255, 255, 0.95);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-evenly;
+            align-items: center;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+>>>>>>> Stashed changes:qpass/templates/student_login.html
         }
 
         #login {
             font-size: 40px;
             font-weight: 600;
+<<<<<<< Updated upstream:index.html
             position: relative;
             bottom: 30px;;
         }
@@ -104,34 +181,121 @@
             position: relative;
             left : 30px;
             top : 5px;
+=======
+            color: #180379;
+            margin-bottom: 10px;
+        }
+
+        .form-group {
+            width: 80%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 10px 0;
+        }
+
+        .form-group label {
+            font-size: 1.5rem;
+            font-weight: 500;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .form-group input {
+            width: 100%;
+            height: 40px;
+            padding: 10px;
+            font-size: 1rem;
+            border: 2px solid #333;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        .form-group input:focus {
+            border-color: #180379;
+            box-shadow: 0 0 5px rgba(24, 3, 121, 0.5);
+>>>>>>> Stashed changes:qpass/templates/student_login.html
         }
 
         #button {
-            width : 100px;
-            height:30px;
+            width: 120px;
+            height: 40px;
             background-color: antiquewhite;
+<<<<<<< Updated upstream:index.html
             position: relative;
             bottom: 30px;
             border : 1px solid black;
+=======
+            border: 2px solid black;
+>>>>>>> Stashed changes:qpass/templates/student_login.html
             border-radius: 10%;
+            margin-top: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
 
+<<<<<<< Updated upstream:index.html
         #nav {
             display: inline;
             position: fixed;
             top : 180px;
             left : 650px;
+=======
+        #button:hover {
+            background-color: #e0d0c0;
+            transform: scale(1.05);
+>>>>>>> Stashed changes:qpass/templates/student_login.html
         }
 
-        .nav{
+        #button button {
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            border: none;
+            font-size: 1.2rem;
             font-weight: 600;
+<<<<<<< Updated upstream:index.html
             font-size: 24px;
+=======
+            cursor: pointer;
+            color: #333;
+        }
+
+        .error-message {
+            color: red;
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 10px 0;
+            text-align: center;
+        }
+
+        .success-message {
+            color: green;
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 10px 0;
+            text-align: center;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            #collegeName {
+                font-size: 4vw;
+            }
+            #Address {
+                font-size: 2.5vw;
+            }
+            #container {
+                width: 80%;
+                min-width: unset;
+            }
+>>>>>>> Stashed changes:qpass/templates/student_login.html
         }
     </style>
 </head>
 <body>
     <header>
-        <img id="collegeLogo" src="	https://jntuhces.ac.in/resp/images_new/jntuhlogo.png" alt="jntuhces logo">
+        <img id="collegeLogo" src="https://jntuhces.ac.in/resp/images_new/jntuhlogo.png" alt="JNTUHCES Logo">
         <div id="collegeName">JNTUH UNIVERSITY COLLEGE OF ENGINEERING - SULTANPUR</div>
         <div id="Address">Sulthanpur (V), Choutkur (M), Sangareddy (D), (T.G)-502 273.</div>
     </header>
@@ -142,6 +306,7 @@
             <a class="nav" href="security_page.html">Staff</a>
         </div>
         <div id="container">
+<<<<<<< Updated upstream:index.html
             <h2 id="login">Login</h2>
 
             <div id="roll_no">
@@ -158,5 +323,47 @@
             </div>
         </div>
     </body>
+=======
+            <form method="POST">
+                {% csrf_token %}
+                
+                <input type="text" name="student_roll_no" placeholder="Enter Roll Number" required>
+                
+                <input type="password" name="password" placeholder="Enter Password" required>
+                
+                <button type="submit">Login</button>
+            </form>
+        </div>
+    </main>
+
+    <!-- ✅ Optional JavaScript for Better UX -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-focus on Roll No input
+            const rollNoInput = document.getElementById('roll_no_input');
+            if (rollNoInput) {
+                rollNoInput.focus();
+            }
+
+            // Optional: Client-side validation
+            const form = document.querySelector('form');
+            form.addEventListener('submit', function(e) {
+                const rollNo = document.getElementById('roll_no_input').value.trim();
+                const password = document.getElementById('password_input').value.trim();
+
+                if (!rollNo || !password) {
+                    e.preventDefault();
+                    alert('Please fill in both Roll No and Password');
+                    return false;
+                }
+
+                // Prevent multiple submissions
+                const submitBtn = form.querySelector('button[type="submit"]');
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Logging in...';
+            });
+        });
+    </script>
+>>>>>>> Stashed changes:qpass/templates/student_login.html
 </body>
 </html>
