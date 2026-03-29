@@ -35,13 +35,14 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
-    'cloudinary_storage',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'whitenoise.runserver_nostatic',
+    'cloudinary_storage',
     'cloudinary',
     'qpass',
 ]
@@ -82,8 +83,7 @@ WSGI_APPLICATION = 'firstproject.wsgi.application'
 
 DATABASES = {
     'default': dj_database_url.config(
-        # Paste your real TiDB URL right here temporarily!
-        default='mysql://uopPwHUk9dv43bH.root:YOUR_PASSWORD@gateway01.ap-southeast-1.prod.aws.tidbcloud.com:4000/test?ssl_mode=VERIFY_IDENTITY',
+        default='sqlite:///db.sqlite3',
         conn_max_age=600
     )
 }
