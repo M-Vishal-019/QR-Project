@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>late-List</title>
@@ -16,7 +17,7 @@
             background-color: blue;
             display: flex;
             flex-wrap: wrap;
-            background-image: url(background.jpeg);
+            background-image: url("{% static 'background.jpeg' %}");
             background-size: cover;
             border-bottom: 2px solid black;
             width : 100vw;
@@ -96,8 +97,29 @@
         }
         body {
             
-            background-image: url(05.jpg.jpeg);
+            background-image: url("{% static '05.jpg.jpeg' %}");
             background-size: cover;
+        }
+
+        #date-filter-form {
+            position: absolute;
+            right: 2.5%;
+            top: 25%;
+            font-weight: 600;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #date-picker {
+            padding: 5px 10px;
+            font-size: 1.2rem;
+            border: 2px solid black;
+            border-radius: 5px;
+            font-family: 'Times New Roman', Times, serif;
+            cursor: pointer;
+            background-color: white;
         }
     </style>
 </head>
@@ -105,12 +127,16 @@
     <header>
         <img id="collegeLogo" src="	https://jntuhces.ac.in/resp/images_new/jntuhlogo.png" alt="jntuhces logo">
         <div id="collegeName">JNTUH UNIVERSITY COLLEGE OF ENGINEERING - SULTANPUR</div>
-        <div id="Address">Sulthanpur (V), Choutkur (M), Sangareddy (D), (T.G)-502 273.</div>
+        <div id="Address">Sulthanpur (V), Pulkal (M), Sangareddy (D), (T.G)-502 273.</div>
     </header>
     
     <main>
         <p id="late-list">Late List</p>
-        <p id = "date">Date : 05/02/2026</p>
+        
+        <form method="GET" id="date-filter-form">
+            <label for="date-picker">Date: </label>
+            <input type="date" id="date-picker" name="date" value="{{ input_date }}" onchange="this.form.submit()">
+        </form>
 
         <table id="late_list_table">
             <tr>
@@ -123,45 +149,25 @@
                 <th>OutTime</th>
             </tr>
 
-            <tr class = "odd">
-                <td>01</td>
-                <td>M.Vishal</td>
-                <td>24SS1A6635</td>
-                <td>II</td>
-                <td>CSE (AI & ML )</td>
-                <td>9318919258</td>
-                <td>09:30 AM</td>
-            </tr>
-
-            <tr class = "even">
-                <td>02</td>
-                <td>B.Anil Kumar</td>
-                <td>24SS1A6606</td>
-                <td>II</td>
-                <td>CSE (AI & ML )</td>
-                <td>9318919258</td>
-                <td>10:30 AM</td>
-            </tr>
-
-            <tr class = "odd">
-                <td>03</td>
-                <td>M.Sai Kumar</td>
-                <td>24SS1A6641</td>
-                <td>II</td>
-                <td>CSE (AI & ML )</td>
-                <td>9318919258</td>
-                <td>11:30 AM</td>
-            </tr>
-
-            <tr class = "even">
-                <td>04</td>
-                <td>D.Shiva Kumar Reddy</td>
-                <td>24SS1A6613</td>
-                <td>II</td>
-                <td>CSE (AI & ML )</td>
-                <td>9318919258</td>
-                <td>11:59 AM</td>
-            </tr>
+            {% for record in late_records %}
+                <tr class="{% cycle 'odd' 'even' %}">
+                    <td>{{ forloop.counter|stringformat:"02d" }}</td>
+                    
+                    <td style="font-weight:bold;">{{ record.student_roll_no.name }}</td>
+                    <td>{{ record.student_roll_no.roll_no }}</td>
+                    <td>{{ record.student_roll_no.year }}</td>
+                    <td>{{ record.student_roll_no.branch }}</td>
+                    <td>{{ record.student_roll_no.phone_no }}</td>
+                    
+                    <td style="font-weight:bold; color: #d32f2f;">{{ record.out_time|time:"h:i A" }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="7" style="padding: 20px; font-weight: bold; color: green; font-size: 1.2rem;">
+                        All students have returned to campus safely!
+                    </td>
+                </tr>
+            {% endfor %}
         </table>
     </main>
 </body>

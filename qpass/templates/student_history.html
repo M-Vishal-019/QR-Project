@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {% load static%}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student-History</title>
@@ -15,7 +16,7 @@
             background-color: blue;
             display: flex;
             flex-wrap: wrap;
-            background-image: url(background.jpeg);
+            background-image: url("{% static 'background.jpeg' %}");
             background-size: cover;
             border-bottom: 2px solid black;
             width : 100vw;
@@ -55,7 +56,6 @@
             position: relative;
             left : 3%;
             top : 1%;
-            border : 2px solid black;
             align-items: space-evenly;
         }
 
@@ -73,7 +73,7 @@
             position: absolute;
             right : 10%;
             top : 4%;
-            background-image: url(tony.jpg);
+            background-image: url("{{ student.photo.url }}");
             background-size: cover;
         }
 
@@ -82,7 +82,7 @@
             border : 2px solid black;
             position: absolute;
             left: 2.5%;
-            top : 50%;
+            top : 55%;
         }
 
         th ,td {
@@ -109,27 +109,82 @@
 
         body {
             
-            background-image: url(05.jpg.jpeg);
+            background-image: url("{% static '05.jpg.jpeg' %}");
             background-size: cover;
         }
         
+        #name {
+            position: relative;
+            left : 10%;
+        }
+
+        #rollno {
+            position: relative;
+            left : 10%;
+        }
+
+        #history-con {
+            width: 95%; 
+            margin: 15px auto; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            position: relative; 
+            left: 0%;
+            top: 0%;
+        }
+
+        #history {
+            font-family: 'Times New Roman', 
+            Times, serif;
+        }
+
+        #date {
+            display: flex; 
+            gap: 10px; 
+            align-items: center;
+        }
+
+        #date-pick {
+            font-size: 1.3rem;
+            font-weight: bold; 
+            font-family: 'Times New Roman', Times, serif;
+        }
+
+        #date-in {
+            padding: 5px 10px; 
+            font-size: 1.2rem; 
+            border: 2px solid black; 
+            border-radius: 5px; 
+            font-family: 'Times New Roman', Times, serif; 
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
     <header>
         <img id="collegeLogo" src="	https://jntuhces.ac.in/resp/images_new/jntuhlogo.png" alt="jntuhces logo">
         <div id="collegeName">JNTUH UNIVERSITY COLLEGE OF ENGINEERING - SULTANPUR</div>
-        <div id="Address">Sulthanpur (V), Choutkur (M), Sangareddy (D), (T.G)-502 273.</div>
+        <div id="Address">Sulthanpur (V), Pulkal (M), Sangareddy (D), (T.G)-502 273.</div>
     </header>
 
     <main>
         <div id="container_details">
-            <p class="credentials" id="name">Name :  Tony Stark</p>
-            <p class="credentials" id="rollno">Roll No : 24SS1A6635</p>
-            <p class="credentials id="branch"">Branch : CSE (AI & ML)</p>
-            <p class="credentials id="year"">Year : II</p>
+            <p class="credentials" id="name">Name : {{ student.name }}</p>
+            <p class="credentials" id="rollno">Roll No : {{ student.roll_no }}</p>
+            <p class="credentials id="branch"">Branch : {{ student.branch }}</p>
+            <p class="credentials id="year"">Year : {{ student.year }}</p>
 
             <div id="student_photo"></div>
+        </div>
+        
+        <div id="history-con" >
+            <h2 id="history">Showing History for: {{ display_date }}</h2>
+            
+            <form method="GET" id="date" >
+                <label for="date-picker" id="date-pick" >Select Date:</label>
+                <input type="date" id="date-picker" name="date" value="{{ input_date }}" onchange="this.form.submit()" id ="date-in">
+            </form>
         </div>
 
         <table id="student_history_table">
@@ -141,37 +196,22 @@
                 <th>In/Out</th>
             </tr>
 
-            <tr class = "out">
-                <td>01</td>
-                <td>29/01/2026</td>
-                <td>09:45 AM</td>
-                <td>Outing</td>
-                <td>Out</td>
-            </tr>
-
-            <tr class = "in">
-                <td>02</td>
-                <td>29/01/2026</td>
-                <td>10:45 PM</td>
-                <td>Outing</td>
-                <td >In</td>
-            </tr>
-
-            <tr class = "out">
-                <td>03</td>
-                <td>06/02/2026</td>
-                <td>09:45 AM</td>
-                <td>Outing</td>
-                <td>Out</td>
-            </tr>
-
-            <tr class = "in">
-                <td>04</td>
-                <td>06/02/2026</td>
-                <td>01:45 PM</td>
-                <td>Outing</td>
-                <td >In</td>
-            </tr>
+            {% for record in history  %}
+            <tr class="{% if record.status == 'Out' %}out{% else %}in{% endif %}">
+                    <td>{{ forloop.counter }}</td>
+                    
+                    <td>{{ record.out_time|date:"d/m/Y" }}</td>
+                    <td>{{ record.out_time|time:"h:i A" }}</td>
+                    
+                    <td>{{ record.Type }}</td>
+                    <td>{{ record.status }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="5" style="font-weight: bold;">No outing history found.</td>
+                </tr>
+            {% endfor %}
+            
         </table>
     </main>
 </body>

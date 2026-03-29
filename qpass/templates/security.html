@@ -1,210 +1,291 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {% load static %}
     <meta charset="UTF-8">
-    <title>Q-Pass | Security Module</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <!-- QR Scanner Library -->
+    <title>Security Dashboard - Scanner</title>
     <script src="https://unpkg.com/html5-qrcode"></script>
 
     <style>
-        *{
-            border : border-box;
-            padding: 0px;
-            margin : 0px;
-        }
-         header {
-            height : 112px;
-            background-color: blue;
-            display: flex;
-            flex-wrap: wrap;
-            background-image: url(background.jpeg);
-            background-size: cover;
-            border-bottom: 2px solid black;
-            width : 100vw;
-            position: relative;
-            right: 10px;
-            bottom: 7px;
-            margin-left: 0.6%;
+        *{ 
+            border : border-box; 
+            padding: 0px; 
+            margin : 0px; 
+            font-family: 'Times New Roman', Times, serif; 
         }
 
-        main {
-            width: 100vw;
-            height: 80vh;
+        header { 
+            height : 112px; 
+            background-color: blue; 
+            display: flex; 
+            flex-wrap: wrap; 
+            background-image: url("{% static 'background.jpeg' %}"); 
+            background-size: cover; 
+            border-bottom: 2px solid black; 
+            width : 100vw; 
+            position: relative; 
         }
 
-        #collegeName {
-            font-family: 'Times New Roman', Times, serif;
-            font-size: 2.8vw;
-            font-weight: 600;
-            position: absolute;
-            right : 5%;
-            top:14px;
-        }
-
-        #Address {
-            color: rgb(24, 3, 121);
-            position: absolute;
-            left: 30%;
-            bottom: 5%;
-            font-size: 1.8vw;
-        }
-
-        #Security{
-            font-size: 40px;
-            font-family: 'Times New Roman', Times, serif;
-            color: black;
-            border-radius: 2%;
-            justify-items: center;
-            margin-left: 600px;
-            margin-top: 10px;
+        #collegeName { 
+            font-size: 2.5vw; 
+            font-weight: 600; 
+            position: absolute; 
+            right : 5%; top:14px; 
         }
         
-        .container{
-            display:flex;
-            justify-content:space-around;
-            padding:20px;
-        }
-
-        .box{
-            background:white;
-            padding:20px;
-            border-radius:10px;
-            width:45%;
-            box-shadow:0 0 10px rgba(0,0,0,0.15);
-            height: 45%;
-        }
-
-        h2{
-            text-align:center;
-            margin-bottom:15px;
-            color:#002b5c;
-            font-size: 35px;
-        }
-
-        #reader{
-            width:100%;
-        }
-
-        .info{
-            font-size:25px;
-            margin:8px 0;
-            font-family: 'Times New Roman', Times, serif;
-        }
-
-        .label{
-            font-weight:bold;
-        }
-
-        .count{
-            font-size:25px;
-            text-align:center;
-            margin-top:15px;
-            font-family: Arial, Helvetica, sans-serif;
-        }
-
-        .in{
-            color:green;
-        }
-        .out{
-            color:red;
-        }
-
-        #late_list_link{
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 1.5rem;
-            color: black;
-            position: absolute;
-            left: 2%;
-        }
-
-        #late_list_link:hover {
-            color: blue;
+        #Address { 
+            color: rgb(24, 3, 121); 
+            position: absolute; 
+            left: 30%; 
+            bottom: 5%; 
+            font-size: 1.5vw; 
         }
 
         body {
-            
-            background-image: url(05.jpg.jpeg);
-            background-size: cover;
+            background-image: url("{% static '05.jpg.jpeg' %}"); 
+            background-size: cover; 
+            min-height: 100vh; 
+        }
+
+        main { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            padding-top: 20px; 
         }
         
-    </style>
-
-</head>
-    <body>
-    <header>
-        <img id="collegeLogo" src="	https://jntuhces.ac.in/resp/images_new/jntuhlogo.png" alt="jntuhces logo">
-        <div id="collegeName">JNTUH UNIVERSITY COLLEGE OF ENGINEERING - SULTANPUR</div>
-        <div id="Address">Sulthanpur (V), Choutkur (M), Sangareddy (D), (T.G)-502 273.</div>
-    </header>
-    <main>
-
-            <a href="lateList/" id="late_list_link">Late List</a>
-        <div id = "Security">
-            Security Module
-        </div>
-        <div class="container">
-            
-            <div class="box">
-                <h2>QR Scanner</h2>
-                <div id="reader"></div>
-            </div>
-            
-            <div class="box">
-                <h2>Student Details</h2>
-                
-            <div class="info"><span class="label">Name:</span> <span id="name">-</span></div>
-            <div class="info"><span class="label">Roll No:</span> <span id="roll">-</span></div>
-            <div class="info"><span class="label">Branch:</span> <span id="branch">-</span></div>
-            <div class="info"><span class="label">Phone:</span> <span id="phone">-</span></div>
-            <div class="info"><span class="label">Outing Type:</span> <span id="type">-</span></div>
-            
-            <div class="count in">IN Count: <span id="inCount">0</span></div>
-            <div class="count out">OUT Count: <span id="outCount">0</span></div>
-            </div>
-        </div>
-    </main>
-    <script>
-        let inCount = 0;
-        let outCount = 0;
-
-        function onScanSuccess(decodedText) {
-
-
-            let lines = decodedText.split("\n");
-
-            let name = lines[1]?.split(":")[1];
-            let roll = lines[2]?.split(":")[1];
-            let branch = lines[3]?.split(":")[1];
-            let phone = lines[4]?.split(":")[1];
-            let type = lines[5]?.split(":")[1];
-
-            document.getElementById("name").innerText = name || "";
-            document.getElementById("roll").innerText = roll || "";
-            document.getElementById("branch").innerText = branch || "";
-            document.getElementById("phone").innerText = phone || "";
-            document.getElementById("type").innerText = type || "";
-
-            // Update Count
-            if(type && type.trim() === "Outing"){
-                outCount++;
-                document.getElementById("outCount").innerText = outCount;
-            }else{
-                inCount++;
-                document.getElementById("inCount").innerText = inCount;
-            }
+        #live-stats { 
+            display: flex; 
+            gap: 20px; 
+            margin-bottom: 20px; 
+            background: rgba(255, 255, 255, 0.9); 
+            padding: 15px 30px; 
+            border: 3px solid black;
+            border-radius: 10px; 
+            font-size: 1.3rem; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3); 
         }
 
-        let html5QrCode = new Html5Qrcode("reader");
+        .stat-box { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            font-weight: bold; 
+        }
+        
+        .stat-num { 
+            font-size: 1.8rem; 
+            color: #d32f2f; 
+        }
+        
+        #scanner-section { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+        }
 
-        html5QrCode.start(
-            { facingMode: "environment" },
-            { fps: 0.6, qrbox: 250 },
-            onScanSuccess
-        );
-        </script>
+        #reader { 
+            width: 500px; 
+            border: 5px solid black; 
+            border-radius: 15px; 
+            background-color: white; 
+            overflow: hidden; 
+        }
 
-    </body>
+        #review-section { 
+            display: none; 
+            width: 400px; 
+            background-color: white; 
+            border: 3px solid black; 
+            border-radius: 15px; 
+            padding: 20px; 
+            text-align: center; 
+            box-shadow: 0px 10px 20px rgba(0,0,0,0.5); 
+        }
+
+        #review-photo { 
+            width: 150px; 
+            height: 180px; 
+            object-fit: cover; 
+            border: 2px solid black; 
+            margin-bottom: 15px; 
+        }
+
+        .info-text { 
+            font-size: 1.2rem; 
+            font-weight: bold; 
+            margin-bottom: 5px; 
+        }
+
+        #review-direction { 
+            font-size: 1.5rem; 
+            color: #d32f2f; 
+            margin: 15px 0; 
+            font-weight: 900; 
+            background: #ffebee; 
+            padding: 5px; 
+            border-radius: 5px; 
+        }
+        
+        .btn-container { 
+            display: flex; 
+            justify-content: 
+            space-between; 
+            margin-top: 20px;
+        }
+
+        .btn { 
+            width: 45%; 
+            padding: 10px; 
+            font-size: 1.2rem; 
+            font-weight: bold; 
+            border: 2px solid black; 
+            cursor: pointer; 
+            border-radius: 8px; 
+        }
+
+        .btn-accept { 
+            background-color: #4CAF50; 
+            color: white; 
+        }
+
+        .btn-reject { 
+            background-color: #f44336; 
+            color: white; 
+        }
+        
+        .nav-links { 
+            margin-top: 20px; 
+        }
+        .nav-links a { 
+            text-decoration: none; 
+            color: white; 
+            background: black; 
+            padding: 10px 20px; 
+            border-radius: 5px; 
+            margin: 0 10px; 
+            font-weight: bold; 
+        }
+
+        #system-message { 
+            margin-top: 15px; 
+            font-weight: bold; 
+            font-size: 1.2rem; 
+        }
+
+        #verify {
+            margin-bottom: 15px; 
+            border-bottom: 2px solid black;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img id="collegeLogo" src="https://jntuhces.ac.in/resp/images_new/jntuhlogo.png" height="100px" alt="logo">
+        <div id="collegeName">JNTUH UNIVERSITY COLLEGE OF ENGINEERING - SULTANPUR</div>
+        <div id="Address">Sulthanpur (V), Pulkal (M), Sangareddy (D), (T.G)-502 273.</div>
+    </header>
+
+    <main>
+        <div id="live-stats">
+            <div class="stat-box">Total Students <span class="stat-num" id="count-total">{{ total }}</span></div>
+            <div class="stat-box" style="color: green;">In Campus <span class="stat-num" style="color: green;" id="count-in">{{ in_campus }}</span></div>
+            <div class="stat-box">Outing <span class="stat-num" id="count-outing">{{ out_outing }}</span></div>
+            <div class="stat-box">Home <span class="stat-num" id="count-home">{{ out_home }}</span></div>
+        </div>
+
+        <div id="scanner-section">
+            <div id="reader"></div>
+            <div id="system-message"></div>
+        </div>
+
+        <div id="review-section">
+            <h2 id ="verify" >Verify Student</h2>
+            <img id="review-photo" src="" alt="Student">
+            <p class="info-text">Name: <span id="r-name"></span></p>
+            <p class="info-text">Roll No: <span id="r-roll"></span></p>
+            <p class="info-text">Branch: <span id="r-branch"></span> (<span id="r-year"></span>)</p>
+            
+            <div id="review-direction">Going Out</div>
+
+            <div class="btn-container">
+                <button class="btn btn-accept" onclick="submitDecision('Accept')">Accept</button>
+                <button class="btn btn-reject" onclick="submitDecision('Reject')">Reject</button>
+            </div>
+        </div>
+
+        <div class="nav-links">
+            <a href="{% url 'latelist' %}">Late List</a>
+            <a href="{% url 'logout' %}" style="background: red;">Logout</a>
+        </div>
+    </main>
+
+    <script>
+        let currentQrData = ""; 
+        let scanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250, supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA] });
+
+        function onScanSuccess(decodedText) {
+            scanner.pause(); 
+            document.getElementById('system-message').innerHTML = "Fetching student details...";
+            
+            fetch("{% url 'security' %}", {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "X-CSRFToken": "{{ csrf_token }}" },
+                body: JSON.stringify({ "action": "verify", "qr_data": decodedText })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "success") {
+                    currentQrData = decodedText;
+                    
+                    document.getElementById('r-name').innerText = data.student.name;
+                    document.getElementById('r-roll').innerText = data.student.roll_no;
+                    document.getElementById('r-branch').innerText = data.student.branch;
+                    document.getElementById('r-year').innerText = data.student.year;
+                    document.getElementById('review-direction').innerText = data.student.direction;
+                    document.getElementById('review-photo').src = data.student.photo_url;
+
+                    document.getElementById('scanner-section').style.display = 'none';
+                    document.getElementById('review-section').style.display = 'block';
+                } else {
+                    document.getElementById('system-message').innerHTML = "❌ " + data.message;
+                    document.getElementById('system-message').style.color = "red";
+                    setTimeout(() => { scanner.resume(); }, 2500); 
+                }
+            });
+        }
+
+        function submitDecision(decision) {
+            fetch("{% url 'security' %}", {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "X-CSRFToken": "{{ csrf_token }}" },
+                body: JSON.stringify({ "action": "confirm", "qr_data": currentQrData, "decision": decision })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('review-section').style.display = 'none';
+                document.getElementById('scanner-section').style.display = 'flex';
+                
+                let msgBox = document.getElementById('system-message');
+                msgBox.innerHTML = (decision === 'Accept') ? "✅ " + data.message : "❌ " + data.message;
+                msgBox.style.color = (decision === 'Accept') ? "green" : "red";
+                
+                if (data.counts) {
+                    document.getElementById('count-total').innerText = data.counts.total;
+                    document.getElementById('count-in').innerText = data.counts.in_campus;
+                    document.getElementById('count-outing').innerText = data.counts.out_outing;
+                    document.getElementById('count-home').innerText = data.counts.out_home;
+                }
+                
+                setTimeout(() => {
+                    msgBox.innerHTML = "";
+                    scanner.resume(); 
+                }, 3000);
+            });
+        }
+
+        scanner.render(onScanSuccess);
+    </script>
+</body>
 </html>

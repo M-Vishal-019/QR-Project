@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
@@ -16,7 +17,7 @@
             background-color: blue;
             display: flex;
             flex-wrap: wrap;
-            background-image: url(background.jpeg);
+            background-image: url("{% static 'background.jpeg' %}");
             background-size: cover;
             border-bottom: 2px solid black;
             width : 100vw;
@@ -117,6 +118,7 @@
             background-color: antiquewhite;
             position: absolute;
             top : 75%;
+            right :35%;
             border : 1px solid black;
             border-radius: 10%;
         }
@@ -135,8 +137,14 @@
 
         body {
             
-            background-image: url(05.jpg.jpeg);
+            background-image: url("{% static '05.jpg.jpeg' %}");
             background-size: cover;
+        }
+
+        #error {
+            color: red; 
+            position: absolute; top: 18%; 
+            font-weight: bold;
         }
     </style>
 </head>
@@ -144,25 +152,31 @@
     <header>
         <img id="collegeLogo" src="	https://jntuhces.ac.in/resp/images_new/jntuhlogo.png" alt="jntuhces logo">
         <div id="collegeName">JNTUH UNIVERSITY COLLEGE OF ENGINEERING - SULTANPUR</div>
-        <div id="Address">Sulthanpur (V), Choutkur (M), Sangareddy (D), (T.G)-502 273.</div>
+        <div id="Address">Sulthanpur (V), Pulkal (M), Sangareddy (D), (T.G)-502 273.</div>
     </header>
 
     <main>
         <div id="container">
             <h2 id="login">Login</h2>
 
-            <div id="roll_no">
-                <p id="roll_no_label">Roll No</p>
-                <input id="roll_no_input" name="student_roll_no" type="text" placeholder="Roll No">
-            </div>
+            {% if error %}
+                <p id="error">{{ error }}</p>
+            {% endif %}
 
-            <div id="student_password">
-                <p id="student_password_label">Password</p>
-                <input id="student_password_input" name="student_password" type="password" placeholder="Password">
-            </div>
-            <div id="button">
-                <a href="student/">Login
-            </div>
+            <form method="POST" style="width: 100%; height: 100%;">
+                {% csrf_token %}
+                <div id="roll_no">
+                    <p id="roll_no_label">Roll No</p>
+                    <input id="roll_no_input" name="student_roll_no" type="text" placeholder="Roll No" required>
+                </div>
+
+                <div id="student_password">
+                    <p id="student_password_label">Password</p>
+                    <input id="student_password_input" name="password" type="password" placeholder="Password" required>
+                </div>
+                
+                <button type="submit" id="button">Login</button>
+            </form>
         </div>
     </main>
 </body>

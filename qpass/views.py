@@ -1,236 +1,242 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse, JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_POST
+from django.contrib import messages
 from django.utils import timezone
-from .models import Student, Security, OutingRecord
-import uuid
-import qrcode
-from io import BytesIO
-import base64
-from django.db import transaction, IntegrityError
-from django.conf import settings
-from django.contrib.auth.hashers import check_password
+from .models import Student, Security,History, Live_Data
 import json
-import logging
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import uuid
+from datetime import datetime, time
 
-
-logger = logging.getLogger(__name__)
-
-STATUS_PENDING_OUT = 'Pending_Out'
-STATUS_PENDING_IN  = 'Pending_In'
-STATUS_OUT         = 'Out'
-STATUS_COMPLETED   = 'Completed'
-
-LATE_HOUR = getattr(settings, 'LATE_HOUR_THRESHOLD', 21)
 
 
 def home(request):
     return render(request, "home.html")
 
-
 def student_login(request):
     if request.method == 'POST':
-        roll_no  = request.POST.get('roll_no', '').strip()
+        roll_no = request.POST.get('student_roll_no', '').strip()
         password = request.POST.get('password', '')
+        
+        if not roll_no or not password:
+            return render(request, 'student_login.html', {'error': 'Please enter both Roll Number and Password'})
 
-        student = Student.objects.filter(roll_no=roll_no).first()
-
-        if student and check_password(password, student.password):
-            request.session['roll_no'] = student.roll_no
-            return redirect('student_dashboard')
-
-        return render(request, 'student_login.html', {'error': 'Invalid credentials'})
-
+        try:
+            student = Student.objects.get(roll_no=roll_no)
+            if student.password == password:
+                request.session['roll_no'] = student.roll_no
+                return redirect('student')
+            else:
+                return render(request, 'student_login.html', {'error': 'Invalid Password'})  
+        except Student.DoesNotExist:
+            return render(request, 'student_login.html', {'error': 'Roll Number not found'})
+        
     return render(request, 'student_login.html')
-
 
 def student_dashboard(request):
     roll_no = request.session.get('roll_no')
     if not roll_no:
         return redirect('student_login')
-
+    
     student = get_object_or_404(Student, roll_no=roll_no)
+    qr_text = None
+    error = None
 
-    active_outing = OutingRecord.objects.filter(
-        roll_no=student,
-        status__in=[STATUS_PENDING_OUT, STATUS_OUT, STATUS_PENDING_IN]
-    ).first()
-
-    qr_image = None
-    message  = None
+    last_record = History.objects.filter(student_roll_no=student).order_by('-out_time').first()
+    
+    last_completed = History.objects.filter(student_roll_no=student).exclude(status='Pending').order_by('-out_time').first()
+    is_out = True if (last_completed and last_completed.status == 'Out') else False
 
     if request.method == 'POST':
-        action = request.POST.get('action')
+        if last_record and last_record.status == 'Pending':
+            qr_text = f"Roll:{student.roll_no}|ID:{last_record.qr_code}"
+        else:
+            direction = "IN" if is_out else "OUT"
+            
+            if is_out:
+                outing_type = last_completed.Type 
+            else:
+                outing_type = request.POST.get('OUT')
+                
+            unique_id = str(uuid.uuid4())[:8].upper()
 
-        if action == 'generate_qr':
-            if not active_outing:
-                outing_type = request.POST.get('outing_type')
-                qr_string = str(uuid.uuid4()).upper()[:10]
+            History.objects.create(
+                student_roll_no=student,
+                Type=outing_type,
+                qr_code=unique_id,
+                out_time=timezone.now(),
+                status='Pending'
+            )
 
-                OutingRecord.objects.create(
-                    roll_no=student,
-                    outing_type=outing_type,
-                    qr_code=qr_string,
-                    status=STATUS_PENDING_OUT
-                )
-                message = "Show this QR to Security for EXIT."
-
-            elif active_outing.status == STATUS_OUT:
-                qr_string = str(uuid.uuid4()).upper()[:10]
-                active_outing.qr_code = qr_string
-                active_outing.status = STATUS_PENDING_IN
-                active_outing.save()
-                message = "Show this QR to Security for ENTRY."
-
-            active_outing = OutingRecord.objects.filter(
-                roll_no=student,
-                status__in=[STATUS_PENDING_OUT, STATUS_OUT, STATUS_PENDING_IN]
-            ).first()
-
-    if active_outing and active_outing.status in [STATUS_PENDING_OUT, STATUS_PENDING_IN]:
-        img    = qrcode.make(active_outing.qr_code)
-        buffer = BytesIO()
-        img.save(buffer, format="PNG")
-        qr_image = base64.b64encode(buffer.getvalue()).decode("utf-8")
+            qr_text = f"Roll:{student.roll_no}|Dir:{direction}|ID:{unique_id}"
 
     context = {
-        'student'      : student,
-        'active_outing': active_outing,
-        'qr_image'     : qr_image,
-        'message'      : message,
-        'date'         : timezone.now().strftime('%d/%m/%Y'),
-        'time'         : timezone.now().strftime('%I:%M %p'),
+        'student': student,  
+        'qr_text': qr_text, 
+        'error': error,
+        'is_out': is_out  
     }
     return render(request, 'student.html', context)
+
+
 
 
 def student_history(request):
     roll_no = request.session.get('roll_no')
     if not roll_no:
         return redirect('student_login')
-
+    
     student = get_object_or_404(Student, roll_no=roll_no)
+    
+    now = timezone.localtime(timezone.now())
+    selected_date_str = request.GET.get('date')
+    
+    if selected_date_str:
+        try:
+            target_date = datetime.strptime(selected_date_str, '%Y-%m-%d').date()
+        except ValueError:
+            target_date = now.date()
+    else:
+        target_date = now.date()
 
-    outings = OutingRecord.objects.filter(roll_no=student).order_by('-id')
+    start_of_day = timezone.make_aware(datetime.combine(target_date, time.min))
+    end_of_day = timezone.make_aware(datetime.combine(target_date, time.max))
 
-    context = {'student': student, 'outings': outings}
+    user_history = History.objects.filter(
+        student_roll_no=student,
+        out_time__range=(start_of_day, end_of_day)
+    ).order_by('-out_time')
+    
+    context = {
+        'student': student,
+        'history': user_history,
+        'input_date': target_date.strftime('%Y-%m-%d'),
+        'display_date': target_date.strftime('%d/%m/%Y')
+    }
     return render(request, 'student_history.html', context)
+
 
 
 
 def security_login(request):
     if request.method == 'POST':
-        security_id = request.POST.get('security_id', '').strip()
-        password    = request.POST.get('password', '')
+        staff_id = request.POST.get('staff_id')
+        password = request.POST.get('password')
 
-        security = Security.objects.filter(security_id=security_id).first()
-
-        if security and check_password(password, security.password):
-            request.session['security_id'] = security.security_id
-            return redirect('security_dashboard')
-
-        return render(request, 'security_login.html', {'error': 'Invalid credentials'})
-
+        try:
+            security = Security.objects.get(security_id=staff_id)
+            if security.password == password:
+                request.session['security_id'] = security.security_id
+                return redirect('security')
+            else :
+                return render(request, 'security_login.html', {'error': 'Invalid Password'})
+        except (Security.DoesNotExist, ValueError):
+            return render(request, 'security_login.html', {'error': 'Invalid Staff Credentials'})
+            
     return render(request, 'security_login.html')
 
 
-@csrf_exempt  
 def security_dashboard(request):
-    staff_id = request.session.get('security_id')
-    if not staff_id:
+    security_id = request.session.get('security_id')
+    if not security_id:
         return redirect('security_login')
+
+    def get_live_counts():
+        total_students = Student.objects.count()
+        out_outing = 0
+        out_home = 0
+        
+        for student in Student.objects.all():
+            last_record = History.objects.filter(student_roll_no=student).exclude(status='Pending').order_by('-out_time').first()
+            if last_record and last_record.status == 'Out':
+                if last_record.Type == 'Outing':
+                    out_outing += 1
+                elif last_record.Type == 'Home':
+                    out_home += 1
+                    
+        in_campus = total_students - (out_outing + out_home)
+        return {
+            'total': total_students,
+            'in_campus': in_campus,
+            'out_outing': out_outing,
+            'out_home': out_home
+        }
 
     if request.method == 'POST':
         try:
-            try:
-                data = json.loads(request.body)
-            except json.JSONDecodeError:
-                return JsonResponse(
-                    {'success': False, 'message': 'Invalid JSON format'}, status=400
-                )
+            data = json.loads(request.body)
+            action = data.get('action')
+            raw_qr_data = data.get('qr_data') 
+            
+            roll_no = raw_qr_data
+            qr_id = None
+            
+            if "Roll:" in raw_qr_data:
+                parts = raw_qr_data.split('|')
+                for part in parts:
+                    if part.startswith('Roll:'):
+                        roll_no = part.split(':')[1]
+                    elif part.startswith('ID:'):
+                        qr_id = part.split(':')[1]
 
-            qr_code_input = data.get('qr_code', '').strip()
-            if not qr_code_input:
-                return JsonResponse(
-                    {'success': False, 'message': 'QR Code missing'}, status=400
-                )
+            student = Student.objects.filter(roll_no=roll_no).first()
+            if not student:
+                return JsonResponse({'status': 'error', 'message': 'Student not found in database.'})
 
-            with transaction.atomic():
-                record = (
-                    OutingRecord.objects
-                    .select_related('roll_no')
-                    .select_for_update()       
-                    .filter(qr_code=qr_code_input)
-                    .first()
-                )
-
+            if action == 'verify':
+                if not qr_id:
+                    return JsonResponse({'status': 'error', 'message': 'Invalid QR Format. No ID found.'})
+                
+                record = History.objects.filter(qr_code=qr_id).first()
                 if not record:
-                    return JsonResponse(
-                        {'success': False, 'message': 'Invalid QR Code'}, status=404
-                    )
+                    return JsonResponse({'status': 'error', 'message': 'Corrupted QR Code.'})
+                if record.status != 'Pending':
+                    return JsonResponse({'status': 'error', 'message': f'REJECTED: QR code already used for {record.status}.'})
 
-                student = record.roll_no
-                now     = timezone.now()      
+                previous_completed = History.objects.filter(student_roll_no=student).exclude(id=record.id).order_by('-out_time').first()
+                direction = "Coming In" if (previous_completed and previous_completed.status == 'Out') else "Going Out"
 
-                total_outings = OutingRecord.objects.filter(
-                    roll_no=student, status=STATUS_COMPLETED
-                ).count()
+                return JsonResponse({
+                    'status': 'success',
+                    'student': {
+                        'name': student.name,
+                        'roll_no': student.roll_no,
+                        'branch': student.branch,
+                        'year': student.year,
+                        'direction': direction,
+                        'photo_url': student.photo.url if student.photo else '/static/student_logo.webp'
+                    }
+                })
 
-                response_data = {
-                    'success'      : True,
-                    'name'         : student.name,
-                    'roll'         : student.roll_no,
-                    'outing_type'  : record.outing_type,
-                    'total_outings': total_outings,
-                }
-
-                if record.status == STATUS_PENDING_OUT:
-                    record.status   = STATUS_OUT
-                    record.out_time = now
-                    record.save()
-
-                    response_data['action']  = 'EXIT'
-                    response_data['message'] = 'Exit Granted'
-
-                elif record.status == STATUS_PENDING_IN:
-                    record.in_time = now
-                    record.status  = STATUS_COMPLETED
-                    record.is_late = now.hour >= LATE_HOUR   
-                    record.save()
-
-                  
-                    total_outings = OutingRecord.objects.filter(
-                        roll_no=student, status=STATUS_COMPLETED
-                    ).count()
-
-                    response_data['action']        = 'ENTRY'
-                    response_data['message']       = 'Entry Granted'
-                    response_data['is_late']       = record.is_late
-                    response_data['total_outings'] = total_outings
-
-               
+            elif action == 'confirm':
+                decision = data.get('decision')
+                if decision == 'Accept':
+                    record = History.objects.filter(qr_code=qr_id, status='Pending').first()
+                    if record:
+                        previous_completed = History.objects.filter(student_roll_no=student).exclude(id=record.id).order_by('-out_time').first()
+                        if previous_completed and previous_completed.status == 'Out':
+                            record.status = 'In'
+                        else:
+                            record.status = 'Out'
+                            
+                        record.out_time = timezone.now()
+                        record.save() 
+                        
+                        return JsonResponse({
+                            'status': 'success', 
+                            'message': f'{student.name} successfully marked {record.status}.',
+                            'counts': get_live_counts() 
+                        })
+                    else:
+                        return JsonResponse({'status': 'error', 'message': 'Record no longer pending.'})
                 else:
-                    return JsonResponse(
-                        {'success': False, 'message': f'Invalid Status: {record.status}'},
-                        status=400
-                    )
+                    return JsonResponse({'status': 'error', 'message': 'Entry Rejected by Security.'})
 
-                return JsonResponse(response_data)
-
-        except IntegrityError as e:
-            logger.error(f"Database Integrity Error in security_dashboard: {e}")
-            return JsonResponse(
-                {'success': False, 'message': 'Database error occurred'}, status=500
-            )
         except Exception as e:
-            logger.error(f"Unexpected Error in security_dashboard: {e}")
-            return JsonResponse(
-                {'success': False, 'message': 'Internal server error'}, status=500
-            )
+            return JsonResponse({'status': 'error', 'message': str(e)})
 
-    context = {'date': timezone.now().strftime('%d/%m/%Y')}
-    return render(request, 'security.html', context)
+    return render(request, 'security.html', get_live_counts())
+
 
 
 def late_list(request):
@@ -238,28 +244,52 @@ def late_list(request):
     if not security_id:
         return redirect('security_login')
 
-    from django.db.models import Q
+    now = timezone.localtime(timezone.now())
+    today_date = now.date()
+    
+    selected_date_str = request.GET.get('date')
+    if selected_date_str:
+        try:
+            target_date = datetime.strptime(selected_date_str, '%Y-%m-%d').date()
+        except ValueError:
+            target_date = today_date
+    else:
+        target_date = today_date
 
-    current_time = timezone.now()
+    start_of_day = timezone.make_aware(datetime.combine(target_date, time.min))
+    end_of_day = timezone.make_aware(datetime.combine(target_date, time.max))
 
-    late_filter = Q(is_late=True)
-    if current_time.hour >= LATE_HOUR:
-        late_filter |= Q(status__in=[STATUS_OUT, STATUS_PENDING_IN])
+    late_records = []
+    
+    test_curfew_time = time(15, 55) 
 
-    late_records = (
-        OutingRecord.objects
-        .filter(late_filter)
-        .distinct()
-        .order_by('-id')     
-    )
+    students_active_on_date = Student.objects.filter(
+        history__out_time__range=(start_of_day, end_of_day)
+    ).distinct()
+
+    for student in students_active_on_date:
+        last_record_of_day = History.objects.filter(
+            student_roll_no=student,
+            out_time__range=(start_of_day, end_of_day)
+        ).exclude(status='Pending').order_by('-out_time').first()
+
+        if last_record_of_day and last_record_of_day.status == 'Out' and last_record_of_day.Type != 'Home':
+            
+            if target_date < today_date:
+                late_records.append(last_record_of_day)
+            elif target_date == today_date and now.time() >= test_curfew_time:
+                late_records.append(last_record_of_day)
+                
+    late_records.sort(key=lambda x: x.out_time)
 
     context = {
         'late_records': late_records,
-        'date'        : current_time.strftime('%d/%m/%Y'),
+        'input_date': target_date.strftime('%Y-%m-%d'), 
+        'display_date': target_date.strftime('%d/%m/%Y')
     }
     return render(request, 'lateList.html', context)
 
-@require_POST
+
 def logout(request):
     request.session.flush()
     return redirect('home')
