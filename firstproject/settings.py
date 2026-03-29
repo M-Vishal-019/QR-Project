@@ -40,9 +40,9 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'cloudinary_storage',
-    'django.contrib.staticfiles',
     'whitenoise.runserver_nostatic',
+    'django.contrib.staticfiles',
+    'cloudinary_storage',
     'cloudinary',
     'qpass',
 ]
@@ -126,9 +126,16 @@ STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles' # Required for Render deployment
 STATICFILES_DIRS = [BASE_DIR / 'static']
 
-# Legacy Storage Settings for Cloudinary/WhiteNoise compatibility
-STATICFILES_STORAGE = 'whitenoise.storage.StaticFilesStorage'
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+STORAGES = {
+    # This handles the CSS/Layout (WhiteNoise)
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.StaticFilesStorage",
+    },
+    # This handles the Student Photos (Cloudinary)
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    },
+}
 
 # TiDB Serverless strictly REQUIRES a secure SSL connection.
 # This tells Django to use SSL when connecting to production.
