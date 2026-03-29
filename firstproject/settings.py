@@ -127,7 +127,7 @@ STATIC_ROOT = BASE_DIR / 'staticfiles' # Required for Render deployment
 STATICFILES_DIRS = [BASE_DIR / 'static']
 
 # Legacy Storage Settings for Cloudinary/WhiteNoise compatibility
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.StaticFilesStorage'
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 # TiDB Serverless strictly REQUIRES a secure SSL connection.
