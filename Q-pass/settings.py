@@ -123,12 +123,19 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles' # Required for Render deployment
+STATICFILES_DIRS = [BASE_DIR / 'static']
 
-# New Django 5.x way to handle storage (Replaces DEFAULT_FILE_STORAGE)
+# Legacy Storage Settings for Cloudinary/WhiteNoise compatibility
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
-STATICFILES_DIRS = [BASE_DIR / 'static']
+# TiDB Serverless strictly REQUIRES a secure SSL connection.
+# This tells Django to use SSL when connecting to production.
+if 'mysql' in DATABASES['default'].get('ENGINE', ''):
+    DATABASES['default']['OPTIONS'] = {
+        'ssl_mode': 'VERIFY_IDENTITY',
+    }
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LATE_HOUR_THRESHOLD = 21
