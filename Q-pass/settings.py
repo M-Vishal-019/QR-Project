@@ -16,23 +16,17 @@ from pathlib import Path
 import os
 import dj_database_url
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-c953dj%ei#lgx0@t!abx^@cgx%8$ck$3qzc&hfqs3n)4^&f18='
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-
-# Application definition
 
 INSTALLED_APPS = [
     'cloudinary_storage',
@@ -57,7 +51,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'firstproject.urls'
+ROOT_URLCONF = 'Q-pass.urls'
 
 TEMPLATES = [
     {
@@ -74,11 +68,8 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'firstproject.wsgi.application'
+WSGI_APPLICATION = 'Q-pass.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
 DATABASES = {
     'default': dj_database_url.config(
@@ -87,9 +78,6 @@ DATABASES = {
     )
 }
 
-
-# Password validation
-# https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -107,8 +95,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# Internationalization
-# https://docs.djangoproject.com/en/6.0/topics/i18n/
+
 
 LANGUAGE_CODE = 'en-us'
 
@@ -132,3 +119,10 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LATE_HOUR_THRESHOLD = 21
+
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': 'dujnjfsij',
+    'API_KEY': '222714411381461',
+    'API_SECRET': 'mpfH8hDnGS0pUVesMRXYaryt0Q0'
+}

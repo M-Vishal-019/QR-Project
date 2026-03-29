@@ -3,7 +3,7 @@ from django.db import models
 class Student(models.Model):
     roll_no = models.CharField(max_length=20, primary_key=True)
     name = models.CharField(max_length=200)
-    password = models.CharField(max_length=128)
+    password = models.CharField(max_length=300)
     branch = models.CharField(max_length=50)
     year = models.CharField(max_length=2)
     phone_no = models.CharField(max_length=15)
@@ -14,7 +14,7 @@ class Student(models.Model):
 
 class Security(models.Model):
     security_id = models.IntegerField(primary_key=True)
-    password = models.CharField(max_length=128)
+    password = models.CharField(max_length=300)
 
     def __str__(self):
         return f"Security ID: {self.security_id}"
